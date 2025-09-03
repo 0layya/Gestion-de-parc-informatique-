@@ -705,24 +705,9 @@ app.put('/api/users/:id', authenticateToken, async (req, res) => {
     const userId = req.params.id;
     const { name, email, role, department_id } = req.body;
     
-    // Input validation
-    if (!name || !email) {
-      return res.status(400).json({ error: 'Name and email are required' });
-    }
-    
-    if (!email.includes('@')) {
-      return res.status(400).json({ error: 'Invalid email format' });
-    }
-    
-    // Role validation
-    const validRoles = ['admin', 'it_personnel', 'employee'];
-    if (role && !validRoles.includes(role)) {
-      return res.status(400).json({ error: 'Invalid role' });
-    }
-    
     // Check if user exists
     const [existingUsers] = await pool.execute(
-      'SELECT id, email FROM users WHERE id = ?',
+      'SELECT id, name, email, role, department_id FROM users WHERE id = ?',
       [userId]
     );
     
@@ -730,8 +715,31 @@ app.put('/api/users/:id', authenticateToken, async (req, res) => {
       return res.status(404).json({ error: 'User not found' });
     }
     
+    const existingUser = existingUsers[0];
+    
+    // For partial updates, only validate fields that are being changed
+    const updatedName = name !== undefined ? name : existingUser.name;
+    const updatedEmail = email !== undefined ? email : existingUser.email;
+    const updatedRole = role !== undefined ? role : existingUser.role;
+    const updatedDepartmentId = department_id !== undefined ? department_id : existingUser.department_id;
+    
+    // Input validation for fields that are being updated
+    if (name !== undefined && !name) {
+      return res.status(400).json({ error: 'Name cannot be empty' });
+    }
+    
+    if (email !== undefined && !email.includes('@')) {
+      return res.status(400).json({ error: 'Invalid email format' });
+    }
+    
+    // Role validation
+    const validRoles = ['admin', 'it_personnel', 'employee'];
+    if (role !== undefined && !validRoles.includes(role)) {
+      return res.status(400).json({ error: 'Invalid role' });
+    }
+    
     // Check if email is being changed and if it already exists
-    if (email !== existingUsers[0].email) {
+    if (email !== undefined && email !== existingUser.email) {
       const [duplicateUsers] = await pool.execute(
         'SELECT id FROM users WHERE email = ? AND id != ?',
         [email, userId]
@@ -745,7 +753,7 @@ app.put('/api/users/:id', authenticateToken, async (req, res) => {
     // Update the user
     await pool.execute(
       'UPDATE users SET name = ?, email = ?, role = ?, department_id = ? WHERE id = ?',
-      [name, email, role, department_id, userId]
+      [updatedName, updatedEmail, updatedRole, updatedDepartmentId, userId]
     );
     
     // Get updated user

@@ -369,11 +369,11 @@ export const AppProvider: React.FC<{
     try {
       const response = await usersAPI.update(id.toString(), updates);
       dispatch({ type: 'UPDATE_USER', payload: { id, updates: response.data } });
-      // Reload users to get updated data
-      const usersRes = await usersAPI.getAll();
-      dispatch({ type: 'SET_USERS', payload: usersRes.data });
+      // No need to reload all users - just update the local state
     } catch (error) {
       console.error('Update user error:', error);
+      // Re-throw the error so the calling component can handle it
+      throw error;
     }
   };
 
