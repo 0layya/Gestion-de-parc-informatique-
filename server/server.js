@@ -59,6 +59,21 @@ app.get('/api/health', async (req, res) => {
   }
 });
 
+// Simple notification helper
+async function createNotificationsForUsers(userIds, type, title, message) {
+  try {
+    if (!Array.isArray(userIds) || userIds.length === 0) return;
+    for (const uid of userIds) {
+      await pool.execute(
+        'INSERT INTO notifications (user_id, type, title, message) VALUES (?, ?, ?, ?)',
+        [uid, type, title, message]
+      );
+    }
+  } catch (err) {
+    console.error('Notification insert failed:', err);
+  }
+}
+
 // Database schema check endpoint
 app.get('/api/debug/schema', async (req, res) => {
   try {
@@ -455,6 +470,13 @@ app.post('/api/users', authenticateToken, async (req, res) => {
       [result.insertId]
     );
 
+    // Notify admins of new user
+    try {
+      const [admins] = await pool.execute('SELECT id FROM users WHERE role = ?',[ 'admin' ]);
+      await createNotificationsForUsers(admins.map(a => a.id), 'info', 'Nouvel utilisateur', `Utilisateur "${name}" a été créé.`);
+    } catch (notifyErr) {
+      console.error('Failed to notify admins about new user:', notifyErr);
+    }
     res.status(201).json(user[0]);
   } catch (error) {
     console.error('Create user error:', error);
@@ -531,6 +553,11 @@ app.put('/api/users/profile', authenticateToken, async (req, res) => {
       { expiresIn: process.env.JWT_EXPIRES_IN }
     );
     
+    try {
+      await createNotificationsForUsers([userId], 'success', 'Profil mis à jour', 'Votre profil a été mis à jour.');
+    } catch (notifyErr) {
+      console.error('Failed to notify profile update:', notifyErr);
+    }
     res.json({ user: updatedUser, token: newToken });
   } catch (error) {
     console.error('Update profile error:', error);
@@ -727,6 +754,11 @@ app.put('/api/users/:id', authenticateToken, async (req, res) => {
       [userId]
     );
     
+    try {
+      await createNotificationsForUsers([Number(userId)], 'info', 'Compte mis à jour', 'Les informations de votre compte ont été mises à jour par un administrateur.');
+    } catch (notifyErr) {
+      console.error('Failed to notify user update:', notifyErr);
+    }
     res.json(updatedUsers[0]);
   } catch (error) {
     console.error('Update user error:', error);
@@ -761,6 +793,12 @@ app.delete('/api/users/:id', authenticateToken, async (req, res) => {
     // Delete the user
     await pool.execute('DELETE FROM users WHERE id = ?', [userId]);
     
+    try {
+      const [admins] = await pool.execute('SELECT id FROM users WHERE role = ?',[ 'admin' ]);
+      await createNotificationsForUsers(admins.map(a => a.id), 'warning', 'Utilisateur supprimé', `Le compte "${users[0].name}" a été supprimé.`);
+    } catch (notifyErr) {
+      console.error('Failed to notify user deletion:', notifyErr);
+    }
     res.json({ message: 'User deleted successfully' });
   } catch (error) {
     console.error('Delete user error:', error);
@@ -852,6 +890,12 @@ app.post('/api/departments', authenticateToken, async (req, res) => {
         ? (typeof d.permissions === 'string' ? JSON.parse(d.permissions) : d.permissions)
         : { tickets: true, equipment: false, users: false, reports: false }
     };
+    try {
+      const [admins] = await pool.execute('SELECT id FROM users WHERE role = ?',[ 'admin' ]);
+      await createNotificationsForUsers(admins.map(a => a.id), 'success', 'Nouveau département', `Le département "${name}" a été créé.`);
+    } catch (notifyErr) {
+      console.error('Failed to notify department creation:', notifyErr);
+    }
     res.status(201).json(normalized);
   } catch (error) {
     console.error('Create department error:', error);
@@ -909,6 +953,12 @@ app.put('/api/departments/:id', authenticateToken, async (req, res) => {
         ? (typeof d.permissions === 'string' ? JSON.parse(d.permissions) : d.permissions)
         : { tickets: false, equipment: false, users: false, reports: false }
     };
+    try {
+      const [admins] = await pool.execute('SELECT id FROM users WHERE role = ?',[ 'admin' ]);
+      await createNotificationsForUsers(admins.map(a => a.id), 'info', 'Département mis à jour', `Le département "${name}" a été mis à jour.`);
+    } catch (notifyErr) {
+      console.error('Failed to notify department update:', notifyErr);
+    }
     res.json(normalized);
   } catch (error) {
     console.error('Update department error:', error);
@@ -958,6 +1008,12 @@ app.delete('/api/departments/:id', authenticateToken, async (req, res) => {
     // Delete the department
     await pool.execute('DELETE FROM departments WHERE id = ?', [departmentId]);
     
+    try {
+      const [admins] = await pool.execute('SELECT id FROM users WHERE role = ?',[ 'admin' ]);
+      await createNotificationsForUsers(admins.map(a => a.id), 'warning', 'Département supprimé', `Le département #${departmentId} a été supprimé.`);
+    } catch (notifyErr) {
+      console.error('Failed to notify department deletion:', notifyErr);
+    }
     res.json({ message: 'Department deleted successfully' });
   } catch (error) {
     console.error('Delete department error:', error);
@@ -989,11 +1045,26 @@ app.post('/api/equipment', authenticateToken, async (req, res) => {
       return res.status(400).json({ error: 'Missing required fields' });
     }
     
-    console.log('Processed equipment data:', { name, type, brand, model, serial_number, status, assigned_to, location, purchase_date, warranty_expiry, notes });
+    // Normalize assignment. Accept: '', undefined, 'stock' => NULL; otherwise numeric user id
+    let cleanAssignedTo = null;
+    if (assigned_to !== undefined && assigned_to !== '' && assigned_to !== 'stock' && assigned_to !== null) {
+      const parsed = Number(assigned_to);
+      if (Number.isNaN(parsed)) {
+        return res.status(400).json({ error: 'Invalid assignee ID format' });
+      }
+      // Verify user exists
+      const [existingUsers] = await pool.execute('SELECT id FROM users WHERE id = ?', [parsed]);
+      if (existingUsers.length === 0) {
+        return res.status(400).json({ error: 'Assignee not found' });
+      }
+      cleanAssignedTo = parsed;
+    }
+    
+    console.log('Processed equipment data:', { name, type, brand, model, serial_number, status, assigned_to: cleanAssignedTo, location, purchase_date, warranty_expiry, notes });
     
     const [result] = await pool.execute(
       'INSERT INTO equipment (name, type, brand, model, serial_number, status, assigned_to_id, location, purchase_date, warranty_expiry, notes) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
-      [name, type, brand, model, serial_number, status, assigned_to, location, purchase_date, warranty_expiry, notes]
+      [name, type, brand, model, serial_number, status, cleanAssignedTo, location, purchase_date, warranty_expiry, notes]
     );
 
     const [equipment] = await pool.execute(
@@ -1001,6 +1072,12 @@ app.post('/api/equipment', authenticateToken, async (req, res) => {
       [result.insertId]
     );
 
+    try {
+      const [itAndAdmins] = await pool.execute("SELECT id FROM users WHERE role IN ('admin','it_personnel')");
+      await createNotificationsForUsers(itAndAdmins.map(u => u.id), 'success', 'Équipement ajouté', `L'équipement "${name}" a été ajouté.`);
+    } catch (notifyErr) {
+      console.error('Failed to notify equipment creation:', notifyErr);
+    }
     res.status(201).json(equipment[0]);
   } catch (error) {
     console.error('Create equipment error:', error);
@@ -1058,6 +1135,21 @@ app.put('/api/equipment/:id', authenticateToken, async (req, res) => {
       }
     }
     
+    // Normalize assignment. Accept: '', undefined, 'stock' => NULL; otherwise numeric user id
+    let cleanAssignedTo = null;
+    if (assigned_to !== undefined && assigned_to !== '' && assigned_to !== 'stock' && assigned_to !== null) {
+      const parsed = Number(assigned_to);
+      if (Number.isNaN(parsed)) {
+        return res.status(400).json({ error: 'Invalid assignee ID format' });
+      }
+      // Verify user exists
+      const [existingUsers] = await pool.execute('SELECT id FROM users WHERE id = ?', [parsed]);
+      if (existingUsers.length === 0) {
+        return res.status(400).json({ error: 'Assignee not found' });
+      }
+      cleanAssignedTo = parsed;
+    }
+    
     // Update the equipment
     await pool.execute(
       `UPDATE equipment SET 
@@ -1065,7 +1157,7 @@ app.put('/api/equipment/:id', authenticateToken, async (req, res) => {
         status = ?, assigned_to_id = ?, location = ?, purchase_date = ?, 
         warranty_expiry = ?, notes = ? 
        WHERE id = ?`,
-      [name, type, brand, model, serial_number, status, assigned_to, location, purchase_date, warranty_expiry, notes, equipmentId]
+      [name, type, brand, model, serial_number, status, cleanAssignedTo, location, purchase_date, warranty_expiry, notes, equipmentId]
     );
     
     // Get updated equipment
@@ -1074,6 +1166,12 @@ app.put('/api/equipment/:id', authenticateToken, async (req, res) => {
       [equipmentId]
     );
     
+    try {
+      const [itAndAdmins] = await pool.execute("SELECT id FROM users WHERE role IN ('admin','it_personnel')");
+      await createNotificationsForUsers(itAndAdmins.map(u => u.id), 'info', 'Équipement mis à jour', `L'équipement "${name}" a été mis à jour.`);
+    } catch (notifyErr) {
+      console.error('Failed to notify equipment update:', notifyErr);
+    }
     res.json(updatedEquipment[0]);
   } catch (error) {
     console.error('Update equipment error:', error);
@@ -1110,6 +1208,12 @@ app.delete('/api/equipment/:id', authenticateToken, async (req, res) => {
     // Delete the equipment
     await pool.execute('DELETE FROM equipment WHERE id = ?', [equipmentId]);
     
+    try {
+      const [itAndAdmins] = await pool.execute("SELECT id FROM users WHERE role IN ('admin','it_personnel')");
+      await createNotificationsForUsers(itAndAdmins.map(u => u.id), 'warning', 'Équipement supprimé', `Un équipement (#${equipmentId}) a été supprimé.`);
+    } catch (notifyErr) {
+      console.error('Failed to notify equipment deletion:', notifyErr);
+    }
     res.json({ message: 'Equipment deleted successfully' });
   } catch (error) {
     console.error('Delete equipment error:', error);
@@ -1358,6 +1462,38 @@ app.post('/api/tickets', authenticateToken, async (req, res) => {
     );
 
     console.log('Retrieved ticket:', ticket[0]);
+
+    // Create notifications for relevant users
+    try {
+      const createdTicket = ticket[0];
+      // Fetch potential recipients
+      const [allUsers] = await pool.execute(
+        'SELECT id, role, department_id, name FROM users'
+      );
+
+      const recipients = allUsers.filter((u) => {
+        if (u.role === 'admin' || u.role === 'it_personnel') return true;
+        if (createdTicket.target_department_id && u.department_id === createdTicket.target_department_id) return true;
+        if (createdTicket.department_id && u.department_id === createdTicket.department_id) return true;
+        return false;
+      }).filter((u) => u.id !== createdTicket.created_by);
+
+      if (recipients.length > 0) {
+        const title = 'Nouveau ticket créé';
+        const message = `Un nouveau ticket "${createdTicket.title}" a été créé.`;
+        // Insert notifications one-by-one to keep it simple and robust
+        for (const r of recipients) {
+          await pool.execute(
+            'INSERT INTO notifications (user_id, type, title, message) VALUES (?, ?, ?, ?)',
+            [r.id, 'info', title, message]
+          );
+        }
+      }
+    } catch (notifyError) {
+      console.error('Failed to create notifications for new ticket:', notifyError);
+      // Do not fail the request because of notification issues
+    }
+
     res.status(201).json(ticket[0]);
   } catch (error) {
     console.error('Create ticket error:', error);
@@ -1433,6 +1569,15 @@ app.put('/api/tickets/:id', authenticateToken, async (req, res) => {
       [id]
     );
 
+    try {
+      const updated = tickets[0];
+      if (status !== undefined) {
+        const recipients = [updated.created_by, updated.assigned_to].filter(v => v);
+        await createNotificationsForUsers(recipients, 'info', 'Statut du ticket modifié', `Le ticket "${updated.title}" est maintenant: ${updated.status}.`);
+      }
+    } catch (notifyErr) {
+      console.error('Failed to notify ticket status update:', notifyErr);
+    }
     res.json(tickets[0]);
   } catch (error) {
     console.error('Update ticket error:', error);
@@ -1522,7 +1667,20 @@ app.put('/api/tickets/:id/assign', authenticateToken, async (req, res) => {
        WHERE t.id = ?`,
       [ticketId]
     );
-    
+
+    // Create a notification for the newly assigned user
+    try {
+      const updated = updatedTickets[0];
+      if (userId) {
+        await pool.execute(
+          'INSERT INTO notifications (user_id, type, title, message) VALUES (?, ?, ?, ?)',
+          [userId, 'info', 'Ticket assigné', `Vous avez été assigné au ticket "${updated.title}".`]
+        );
+      }
+    } catch (notifyError) {
+      console.error('Failed to create assignment notification:', notifyError);
+    }
+
     res.json(updatedTickets[0]);
   } catch (error) {
     console.error('Assign ticket error:', error);
@@ -1671,6 +1829,18 @@ app.post('/api/tickets/:id/comments', authenticateToken, async (req, res) => {
        WHERE tc.id = ?`,
       [result.insertId]
     );
+
+    // Notify ticket creator and assignee of the new comment
+    try {
+      const [ticketsRows] = await pool.execute('SELECT title, created_by, assigned_to FROM tickets WHERE id = ?', [id]);
+      if (ticketsRows.length > 0) {
+        const t = ticketsRows[0];
+        const recipients = [t.created_by, t.assigned_to].filter(v => v && v !== req.user.id);
+        await createNotificationsForUsers(recipients, 'info', 'Nouveau commentaire', `Nouveau commentaire sur le ticket "${t.title}".`);
+      }
+    } catch (notifyErr) {
+      console.error('Failed to notify new comment:', notifyErr);
+    }
 
     res.status(201).json(comments[0]);
   } catch (error) {

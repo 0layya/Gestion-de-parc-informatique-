@@ -30,29 +30,6 @@ const Login: React.FC<LoginProps> = ({ onToggleMode }) => {
     }
   };
 
-  // Demo credentials with correct passwords
-  const demoUsers = [
-    { email: 'admin@ibnzohr.com', password: 'admin', role: 'Administrateur' },
-  ];
-
-  const handleDemoLogin = async (email: string, password: string, role: string) => {
-    setEmail(email);
-    setPassword(password);
-    setError('');
-    setLoading(true);
-
-    try {
-      const success = await login(email, password);
-      if (!success) {
-        setError(`Login failed for ${role}. Please check your credentials.`);
-      }
-    } catch (_error) {
-      setError('Une erreur est survenue lors de la connexion');
-    } finally {
-      setLoading(false);
-    }
-  };
-
   return (
     <div className="min-h-screen bg-white flex items-center justify-center py-8 px-4">
       <div className="max-w-sm w-full space-y-6">
@@ -133,35 +110,6 @@ const Login: React.FC<LoginProps> = ({ onToggleMode }) => {
             </button>
           </div>
         </form>
-
-        {/* Demo Accounts */}
-        <div className="mt-6 p-3 bg-gray-100 border border-black rounded">
-          <h4 className="text-xs font-mono uppercase tracking-wider text-black mb-3 text-center">Demo Account:</h4>
-          <div className="space-y-2">
-            {demoUsers.map((user, index) => (
-              <div key={index} className="flex flex-col space-y-1">
-                <div className="text-xs text-black font-mono">
-                  <strong>{user.email}</strong> - {user.role}
-                </div>
-                <button
-                  type="button"
-                  onClick={() => handleDemoLogin(user.email, user.password, user.role)}
-                  disabled={loading}
-                  className={`w-full py-1 px-2 text-xs font-mono border border-black disabled:opacity-50 transition-colors ${
-                    email === user.email && password === user.password
-                      ? 'bg-green-500 hover:bg-green-600 text-white'
-                      : 'bg-orange-500 hover:bg-orange-600 text-black'
-                  }`}
-                >
-                  {loading && email === user.email ? 'Logging in...' : `Login as ${user.role}`}
-                </button>
-              </div>
-            ))}
-          </div>
-          <div className="mt-3 text-center text-xs text-gray-600 font-mono">
-            Click the button above to auto-fill and login
-          </div>
-        </div>
       </div>
     </div>
   );

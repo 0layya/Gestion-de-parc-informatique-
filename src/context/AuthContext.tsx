@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useReducer, useEffect } from 'react';
+import React, { createContext, useContext, useReducer } from 'react';
 import { authAPI, usersAPI } from '../services/api';
 import { User, AuthState, UserFormData } from '../types';
 
@@ -38,13 +38,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     user: null,
     isAuthenticated: false,
   });
-
-  useEffect(() => {
-    const storedUser = localStorage.getItem('user');
-    if (storedUser) {
-      dispatch({ type: 'LOGIN', payload: JSON.parse(storedUser) });
-    }
-  }, []);
 
   const login = async (email: string, password: string): Promise<boolean> => {
     try {

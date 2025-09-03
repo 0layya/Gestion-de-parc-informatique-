@@ -305,6 +305,8 @@ const UserManagement: React.FC<UserManagementProps> = ({ showFormOnMount = false
             onChange={(e) => setFilterRole(e.target.value)}
             className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-orange-500 focus:border-orange-500"
             autoComplete="off"
+            aria-label="Filtrer par rôle"
+            title="Filtrer par rôle"
           >
             <option value="">Tous les rôles</option>
             {userRoles.map(role => (
@@ -317,6 +319,8 @@ const UserManagement: React.FC<UserManagementProps> = ({ showFormOnMount = false
             onChange={(e) => setFilterDepartment(e.target.value)}
             className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-orange-500 focus:border-orange-500"
             autoComplete="off"
+            aria-label="Filtrer par département"
+            title="Filtrer par département"
           >
             <option value="">Tous les départements</option>
             {uniqueDepartments.map(dept => (
@@ -373,6 +377,8 @@ const UserManagement: React.FC<UserManagementProps> = ({ showFormOnMount = false
                       checked={selectAll}
                       onChange={handleSelectAll}
                       className="rounded border-gray-300 text-orange-600 focus:ring-orange-500"
+                      aria-label="Tout sélectionner"
+                      title="Tout sélectionner"
                     />
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -402,6 +408,8 @@ const UserManagement: React.FC<UserManagementProps> = ({ showFormOnMount = false
                         checked={selectedUsers.has(item.id)}
                         onChange={() => handleSelectUser(item.id)}
                         className="rounded border-gray-300 text-orange-600 focus:ring-orange-500"
+                        aria-label={`Sélectionner ${item.name}`}
+                        title={`Sélectionner ${item.name}`}
                       />
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
@@ -602,6 +610,8 @@ const UserManagement: React.FC<UserManagementProps> = ({ showFormOnMount = false
               <button
                 onClick={() => setShowPasswordResetModal(false)}
                 className="text-gray-400 hover:text-gray-600"
+                aria-label="Fermer"
+                title="Fermer"
               >
                 <X className="h-6 w-6" />
               </button>

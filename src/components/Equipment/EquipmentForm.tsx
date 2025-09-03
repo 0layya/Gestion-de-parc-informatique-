@@ -63,10 +63,18 @@ const EquipmentForm: React.FC<EquipmentFormProps> = ({ equipment, onClose }) => 
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    // Normalize assigned_to for API: '' or 'stock' => null, else number
+    const payload = {
+      ...formData,
+      assigned_to:
+        formData.assigned_to === '' || formData.assigned_to === 'stock'
+          ? null
+          : Number(formData.assigned_to),
+    } as any;
     if (equipment) {
-      updateEquipment(equipment.id, formData);
+      updateEquipment(equipment.id, payload);
     } else {
-      addEquipment(formData);
+      addEquipment(payload);
     }
     onClose();
   };
@@ -96,6 +104,8 @@ const EquipmentForm: React.FC<EquipmentFormProps> = ({ equipment, onClose }) => 
           <button
             onClick={onClose}
             className="text-gray-400 hover:text-gray-600"
+            aria-label="Fermer"
+            title="Fermer"
           >
             <X className="h-6 w-6" />
           </button>
@@ -351,6 +361,8 @@ const EquipmentForm: React.FC<EquipmentFormProps> = ({ equipment, onClose }) => 
               <button
                 onClick={() => setShowUserForm(false)}
                 className="text-gray-400 hover:text-gray-600"
+                aria-label="Fermer"
+                title="Fermer"
               >
                 <X className="h-6 w-6" />
               </button>
