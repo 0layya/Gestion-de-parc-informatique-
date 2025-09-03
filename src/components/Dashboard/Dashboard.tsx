@@ -82,23 +82,23 @@ const Dashboard: React.FC<DashboardProps> = ({ onPageChange }) => {
     trend?: { value: number; isPositive: boolean };
     subtitle?: string;
   }> = ({ title, value, icon, color, trend, subtitle }) => (
-    <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-100">
+    <div className="glass-card p-4 rounded-xl">
       <div className="flex items-center justify-between">
         <div className="flex items-center">
-          <div className={`p-2 rounded-lg ${color}`}>
+          <div className={`p-2 rounded-lg ${color} shadow-sm`}>
             {icon}
           </div>
           <div className="ml-3">
-            <p className="text-xs font-medium text-gray-600">{title}</p>
-            <p className="text-xl font-bold text-gray-900">{value}</p>
+            <p className="text-xs sm:text-sm font-semibold text-slate-600">{title}</p>
+            <p className="text-lg sm:text-2xl font-bold text-slate-800">{value}</p>
             {subtitle && (
-              <p className="text-xs text-gray-500">{subtitle}</p>
+              <p className="text-xs sm:text-sm text-slate-500 font-medium">{subtitle}</p>
             )}
           </div>
         </div>
         {trend && (
-          <div className={`flex items-center text-xs ${trend.isPositive ? 'text-green-600' : 'text-red-600'}`}>
-            <TrendingUp className={`w-3 h-3 mr-1 ${trend.isPositive ? '' : 'rotate-180'}`} />
+          <div className={`flex items-center text-xs sm:text-sm font-semibold ${trend.isPositive ? 'text-emerald-600' : 'text-red-600'}`}>
+            <TrendingUp className={`w-3 h-3 sm:w-4 sm:h-4 mr-1 ${trend.isPositive ? '' : 'rotate-180'}`} />
             {trend.value}%
           </div>
         )}
@@ -169,25 +169,25 @@ const Dashboard: React.FC<DashboardProps> = ({ onPageChange }) => {
     }
   };
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 h-full flex flex-col">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">
-            Tableau de bord
+          <h1 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent">
+            Tableau de Bord
           </h1>
-          <p className="text-sm text-gray-600">
+          <p className="text-base sm:text-lg text-slate-600 font-medium mt-1">
             Bienvenue, {user?.name}
           </p>
         </div>
-        <div className="flex items-center space-x-2 text-sm text-gray-500">
-          <Database className="w-4 h-4" />
-          <span>Dernière mise à jour: {new Date().toLocaleTimeString('fr-FR')}</span>
+        <div className="flex items-center space-x-2 text-xs sm:text-sm text-slate-500 bg-blue-50/50 px-3 py-2 rounded-lg backdrop-blur-sm">
+          <Database className="w-3 h-3 sm:w-4 sm:h-4 text-blue-600" />
+          <span className="font-medium">Dernière mise à jour: {new Date().toLocaleTimeString('fr-FR')}</span>
         </div>
       </div>
 
       {/* Main Statistics */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+      <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
         <StatCard
           title="Tickets"
           value={stats.tickets.total}
@@ -230,10 +230,11 @@ const Dashboard: React.FC<DashboardProps> = ({ onPageChange }) => {
       </div>
 
       {/* Charts and Analytics */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 flex-1 min-h-0">
         {/* Equipment Status */}
         {(user?.role === 'admin' || user?.role === 'it_personnel') && (
-          <ChartCard title="État des Équipements" className="lg:col-span-1">
+          <div className="glass-card p-4 rounded-xl h-full">
+            <h3 className="text-lg font-semibold text-slate-800 mb-4">État des Équipements</h3>
             <div className="space-y-3">
               <ProgressBar 
                 label="Disponible" 
@@ -260,11 +261,12 @@ const Dashboard: React.FC<DashboardProps> = ({ onPageChange }) => {
                 color="bg-red-500" 
               />
             </div>
-          </ChartCard>
+          </div>
         )}
 
         {/* Ticket Priority */}
-        <ChartCard title="Répartition des Priorités" className="lg:col-span-1">
+        <div className="glass-card p-4 rounded-xl h-full">
+          <h3 className="text-lg font-semibold text-slate-800 mb-4">Répartition des Priorités</h3>
           <div className="space-y-3">
             <ProgressBar 
               label="Urgente" 
@@ -285,10 +287,11 @@ const Dashboard: React.FC<DashboardProps> = ({ onPageChange }) => {
               color="bg-blue-500" 
             />
           </div>
-        </ChartCard>
+        </div>
 
         {/* Quick Actions */}
-        <ChartCard title="Actions Rapides" className="lg:col-span-1">
+        <div className="glass-card p-4 rounded-xl h-full">
+          <h3 className="text-lg font-semibold text-slate-800 mb-4">Actions Rapides</h3>
           <div className="space-y-2">
             <button className="w-full text-left p-2 text-sm text-blue-600 hover:bg-blue-50 rounded-md transition-colors" onClick={() => onPageChange('create-ticket')}>
               + Créer un ticket
@@ -299,38 +302,38 @@ const Dashboard: React.FC<DashboardProps> = ({ onPageChange }) => {
               </button>
             )}
             {user?.role === 'admin' && (
-              <button className="w-full text-left p-2 text-sm text-purple-600 hover:bg-purple-50 rounded-md transition-colors" onClick={() => onPageChange('create-user')}>
+              <button className="w-full text-left p-2 text-sm text-purple-600 hover:bg-blue-50 rounded-md transition-colors" onClick={() => onPageChange('create-user')}>
                 + Créer un utilisateur
               </button>
             )}
           </div>
-        </ChartCard>
+        </div>
       </div>
 
       {/* Detailed Statistics */}
       {(user?.role === 'admin' || user?.role === 'it_personnel') && (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {/* Equipment Breakdown */}
-          <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-100">
-            <h3 className="text-sm font-medium text-gray-900 mb-3 flex items-center">
+          <div className="glass-card p-4 rounded-xl">
+            <h3 className="text-sm font-medium text-slate-800 mb-3 flex items-center">
               <Package className="w-4 h-4 mr-2 text-blue-600" />
               Équipements
             </h3>
             <div className="space-y-2">
               <div className="flex justify-between items-center text-sm">
-                <span className="text-gray-600">Disponible</span>
+                <span className="text-slate-600">Disponible</span>
                 <span className="font-medium text-green-600">{stats.equipment.available}</span>
               </div>
               <div className="flex justify-between items-center text-sm">
-                <span className="text-gray-600">En utilisation</span>
+                <span className="text-slate-600">En utilisation</span>
                 <span className="font-medium text-blue-600">{stats.equipment.inUse}</span>
               </div>
               <div className="flex justify-between items-center text-sm">
-                <span className="text-gray-600">En maintenance</span>
+                <span className="text-slate-600">En maintenance</span>
                 <span className="font-medium text-yellow-600">{stats.equipment.maintenance}</span>
               </div>
               <div className="flex justify-between items-center text-sm">
-                <span className="text-gray-600">En panne</span>
+                <span className="text-slate-600">En panne</span>
                 <span className="font-medium text-red-600">{stats.equipment.broken}</span>
               </div>
             </div>

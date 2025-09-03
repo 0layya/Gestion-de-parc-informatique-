@@ -4,63 +4,195 @@
 
 @layer base {
   * {
-    @apply border-gray-200;
+    @apply border-blue-200/30;
   }
   
   body {
-    @apply bg-white text-black font-mono;
-    font-family: 'JetBrains Mono', 'Courier New', monospace;
-    font-size: 13px;
-    line-height: 1.4;
+    @apply bg-gradient-to-br from-blue-50 via-white to-blue-100 text-slate-800;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-size: 14px;
+    line-height: 1.5;
+    min-height: 100vh;
+  }
+  
+  /* Custom scrollbar */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  
+  ::-webkit-scrollbar-track {
+    @apply bg-blue-50/50;
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    @apply bg-blue-300/60 rounded-full;
+  }
+  
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-blue-400/80;
+  }
+  
+  /* Blob animations for login background */
+  @keyframes blob {
+    0% {
+      transform: translate(0px, 0px) scale(1);
+    }
+    33% {
+      transform: translate(30px, -50px) scale(1.1);
+    }
+    66% {
+      transform: translate(-20px, 20px) scale(0.9);
+    }
+    100% {
+      transform: translate(0px, 0px) scale(1);
+    }
+  }
+  
+  .animate-blob {
+    animation: blob 7s infinite;
+  }
+  
+  .animation-delay-2000 {
+    animation-delay: 2s;
+  }
+  
+  .animation-delay-4000 {
+    animation-delay: 4s;
   }
 }
 
 @layer components {
-  .industrial-card {
-    @apply bg-white border border-gray-800 shadow-none;
+  /* Glass morphism cards */
+  .glass-card {
+    @apply bg-white/70 backdrop-blur-xl border border-white/20 shadow-xl shadow-blue-500/10;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.8) 0%, rgba(255, 255, 255, 0.4) 100%);
   }
   
-  .industrial-button {
-    @apply bg-black text-white border border-black hover:bg-white hover:text-black transition-all duration-200 font-mono text-xs uppercase tracking-wider;
+  .glass-card-elevated {
+    @apply bg-white/80 backdrop-blur-2xl border border-white/30 shadow-2xl shadow-blue-500/20;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.6) 100%);
   }
   
-  .industrial-button-orange {
-    @apply bg-orange-500 text-black border border-orange-500 hover:bg-black hover:text-orange-500 transition-all duration-200 font-mono text-xs uppercase tracking-wider;
+  /* Floating elements - visual floating cards/panels */
+  .floating-element {
+    @apply transition-all duration-300 ease-out;
   }
   
-  .industrial-input {
-    @apply border border-gray-800 bg-white text-black placeholder-gray-500 focus:border-orange-500 focus:ring-0 font-mono text-xs;
+  /* Enterprise buttons */
+  .enterprise-button {
+    @apply bg-gradient-to-r from-blue-600 to-blue-700 text-white border-0 shadow-lg shadow-blue-500/25 hover:shadow-xl hover:shadow-blue-500/40 transition-all duration-300 font-medium text-sm px-6 py-3 rounded-xl;
+    background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
   }
   
-  .industrial-select {
-    @apply border border-gray-800 bg-white text-black focus:border-orange-500 focus:ring-0 font-mono text-xs;
+  .enterprise-button:hover {
+    background: linear-gradient(135deg, #1d4ed8 0%, #1e40af 100%);
   }
   
-  .industrial-table {
-    @apply border-collapse border border-gray-800;
+  .enterprise-button-secondary {
+    @apply bg-white/80 backdrop-blur-sm text-blue-700 border border-blue-200/50 shadow-lg shadow-blue-500/10 hover:shadow-xl hover:shadow-blue-500/20 transition-all duration-300 font-medium text-sm px-6 py-3 rounded-xl;
   }
   
-  .industrial-table th {
-    @apply border border-gray-800 bg-gray-100 px-2 py-1 text-xs font-bold uppercase tracking-wider;
+  .enterprise-button-secondary:hover {
+    @apply bg-white/90;
   }
   
-  .industrial-table td {
-    @apply border border-gray-800 px-2 py-1 text-xs;
+  /* Glass inputs */
+  .glass-input {
+    @apply bg-white/60 backdrop-blur-sm border border-blue-200/50 text-slate-800 placeholder-slate-500 focus:border-blue-400 focus:ring-4 focus:ring-blue-100/50 transition-all duration-300 font-medium text-sm px-4 py-3 rounded-xl;
   }
   
+  .glass-select {
+    @apply bg-white/60 backdrop-blur-sm border border-blue-200/50 text-slate-800 focus:border-blue-400 focus:ring-4 focus:ring-blue-100/50 transition-all duration-300 font-medium text-sm px-4 py-3 rounded-xl;
+  }
+  
+  /* Enterprise tables */
+  .enterprise-table {
+    @apply bg-white/70 backdrop-blur-xl border border-white/20 shadow-xl shadow-blue-500/10 rounded-2xl overflow-hidden;
+  }
+  
+  .enterprise-table th {
+    @apply bg-gradient-to-r from-blue-50/80 to-blue-100/60 backdrop-blur-sm border-b border-blue-200/30 px-6 py-4 text-xs font-semibold text-slate-700 uppercase tracking-wider;
+  }
+  
+  .enterprise-table td {
+    @apply border-b border-blue-100/50 px-6 py-4 text-sm text-slate-700;
+  }
+  
+  .enterprise-table tr:hover {
+    @apply bg-blue-50/30;
+  }
+  
+  /* Status badges with glass effect */
   .status-badge {
-    @apply px-1 py-0.5 text-xs font-mono uppercase tracking-wider border;
+    @apply px-3 py-1.5 text-xs font-semibold rounded-full backdrop-blur-sm border border-white/30 shadow-sm;
   }
   
-  .status-ouvert { @apply bg-blue-100 text-blue-800 border-blue-800; }
-  .status-en-cours { @apply bg-yellow-100 text-yellow-800 border-yellow-800; }
-  .status-resolu { @apply bg-green-100 text-green-800 border-green-800; }
-  .status-ferme { @apply bg-gray-100 text-gray-800 border-gray-800; }
-  .status-escalade { @apply bg-red-100 text-red-800 border-red-800; }
-  .status-en-attente { @apply bg-purple-100 text-purple-800 border-purple-800; }
+  .status-ouvert { 
+    @apply bg-blue-100/80 text-blue-800 border-blue-200/50 shadow-blue-500/20; 
+  }
+  .status-en-cours { 
+    @apply bg-amber-100/80 text-amber-800 border-amber-200/50 shadow-amber-500/20; 
+  }
+  .status-resolu { 
+    @apply bg-emerald-100/80 text-emerald-800 border-emerald-200/50 shadow-emerald-500/20; 
+  }
+  .status-ferme { 
+    @apply bg-slate-100/80 text-slate-700 border-slate-200/50 shadow-slate-500/20; 
+  }
+  .status-escalade { 
+    @apply bg-red-100/80 text-red-800 border-red-200/50 shadow-red-500/20; 
+  }
+  .status-en-attente { 
+    @apply bg-purple-100/80 text-purple-800 border-purple-200/50 shadow-purple-500/20; 
+  }
   
-  .priority-urgente { @apply bg-red-100 text-red-800 border-red-800; }
-  .priority-haute { @apply bg-orange-100 text-orange-800 border-orange-800; }
-  .priority-normale { @apply bg-blue-100 text-blue-800 border-blue-800; }
-  .priority-basse { @apply bg-green-100 text-green-800 border-green-800; }
+  .priority-urgente { 
+    @apply bg-red-100/80 text-red-800 border-red-200/50 shadow-red-500/20; 
+  }
+  .priority-haute { 
+    @apply bg-orange-100/80 text-orange-800 border-orange-200/50 shadow-orange-500/20; 
+  }
+  .priority-normale { 
+    @apply bg-blue-100/80 text-blue-800 border-blue-200/50 shadow-blue-500/20; 
+  }
+  .priority-basse { 
+    @apply bg-emerald-100/80 text-emerald-800 border-emerald-200/50 shadow-emerald-500/20; 
+  }
+  
+  /* Glass navigation */
+  .glass-nav {
+    @apply bg-white/80 backdrop-blur-2xl border-b border-white/20 shadow-lg shadow-blue-500/10;
+  }
+  
+  .glass-sidebar {
+    @apply bg-white/70 backdrop-blur-xl border-r border-white/20 shadow-xl shadow-blue-500/10;
+  }
+  
+  /* Floating action buttons */
+  .fab {
+    @apply fixed bottom-8 right-8 w-14 h-14 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-full shadow-2xl shadow-blue-500/40 hover:shadow-3xl hover:shadow-blue-500/60 transition-all duration-300 flex items-center justify-center;
+  }
+  
+  .fab:hover {
+    @apply transform -translate-y-1 scale-110;
+  }
+  
+  /* Glass modals */
+  .glass-modal {
+    @apply bg-white/90 backdrop-blur-2xl border border-white/30 shadow-2xl shadow-blue-500/20 rounded-2xl;
+  }
+  
+  /* Gradient backgrounds */
+  .gradient-bg {
+    background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 25%, #f0f9ff 50%, #e0f2fe 75%, #f0f9ff 100%);
+    background-size: 400% 400%;
+    animation: gradientShift 15s ease infinite;
+  }
+  
+  @keyframes gradientShift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
 }

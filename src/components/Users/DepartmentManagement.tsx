@@ -49,7 +49,7 @@ const DepartmentManagement: React.FC = () => {
           message: `${user.name} a été ajouté au département ${selectedDepartment.name}.`,
         });
       }
-    } catch (_error) {
+    } catch {
       showNotification({
         type: 'error',
         title: 'Erreur',
@@ -69,7 +69,7 @@ const DepartmentManagement: React.FC = () => {
           message: `${user.name} a été retiré du département ${selectedDepartment?.name}.`,
         });
       }
-    } catch (_error) {
+    } catch {
       showNotification({
         type: 'error',
         title: 'Erreur',

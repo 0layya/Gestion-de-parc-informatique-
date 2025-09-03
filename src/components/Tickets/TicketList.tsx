@@ -116,30 +116,37 @@ const TicketList: React.FC<TicketListProps> = ({ showFormOnMount = false }) => {
   }
 
   return (
-    <div>
-      <div className="mb-6 flex justify-between items-center">
-        <h1 className="text-2xl font-bold text-gray-900">Tickets</h1>
+    <div className="space-y-6">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
+        <div>
+          <h1 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent">
+            Tickets
+          </h1>
+          <p className="mt-1 text-base sm:text-lg text-slate-600 font-medium">
+            Gérer et suivre les demandes de support
+          </p>
+        </div>
         <button
           onClick={() => setShowForm(true)}
-          className="bg-orange-600 text-white px-4 py-2 rounded-lg hover:bg-orange-700 flex items-center space-x-2"
+          className="enterprise-button flex items-center space-x-2 w-full sm:w-auto justify-center"
         >
-          <Plus className="h-4 w-4" />
-          <span>Nouveau ticket</span>
+          <Plus className="h-4 w-4 sm:h-5 sm:w-5" />
+          <span>Nouveau Ticket</span>
         </button>
       </div>
 
       {/* Enhanced Filters */}
-      <div className="bg-white p-6 rounded-lg mb-6 shadow-sm border border-gray-100">
-        <div className="grid grid-cols-1 md:grid-cols-6 gap-4">
+      <div className="glass-card p-4 sm:p-6 rounded-xl sm:rounded-2xl">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-3 sm:gap-4">
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 h-5 w-5" />
             <input
               type="text"
               name="searchTerm"
-              placeholder="Rechercher..."
+              placeholder="Search tickets..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10 w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-orange-500 focus:border-orange-500"
+              className="glass-input pl-10 w-full"
               autoComplete="off"
             />
           </div>
@@ -147,10 +154,10 @@ const TicketList: React.FC<TicketListProps> = ({ showFormOnMount = false }) => {
             name="filterStatus"
             value={filterStatus}
             onChange={(e) => setFilterStatus(e.target.value)}
-            className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-orange-500 focus:border-orange-500"
+            className="glass-select"
             autoComplete="off"
           >
-            <option value="">Tous les statuts</option>
+            <option value="">All Status</option>
             {ticketStatuses.map(status => (
               <option key={status} value={status}>{status}</option>
             ))}
@@ -159,10 +166,10 @@ const TicketList: React.FC<TicketListProps> = ({ showFormOnMount = false }) => {
             name="filterPriority"
             value={filterPriority}
             onChange={(e) => setFilterPriority(e.target.value)}
-            className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-orange-500 focus:border-orange-500"
+            className="glass-select"
             autoComplete="off"
           >
-            <option value="">Toutes les priorités</option>
+            <option value="">All Priorities</option>
             {ticketPriorities.map(priority => (
               <option key={priority} value={priority}>{priority}</option>
             ))}
@@ -171,10 +178,10 @@ const TicketList: React.FC<TicketListProps> = ({ showFormOnMount = false }) => {
             name="filterType"
             value={filterType}
             onChange={(e) => setFilterType(e.target.value)}
-            className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-orange-500 focus:border-orange-500"
+            className="glass-select"
             autoComplete="off"
           >
-            <option value="">Tous les types</option>
+            <option value="">All Types</option>
             {ticketTypes.map(type => (
               <option key={type} value={type}>{type}</option>
             ))}
@@ -183,10 +190,10 @@ const TicketList: React.FC<TicketListProps> = ({ showFormOnMount = false }) => {
             name="filterAssignee"
             value={filterAssignee}
             onChange={(e) => setFilterAssignee(e.target.value)}
-            className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-orange-500 focus:border-orange-500"
+            className="glass-select"
             autoComplete="off"
           >
-            <option value="">Tous les assignés</option>
+            <option value="">All Assignees</option>
             {uniqueAssignees.map(assigneeId => {
               const assignee = users.find(u => u.id === assigneeId);
               return (
@@ -196,18 +203,18 @@ const TicketList: React.FC<TicketListProps> = ({ showFormOnMount = false }) => {
               );
             })}
           </select>
-          <div className="text-sm text-gray-600 flex items-center">
-            {filteredTickets.length} ticket(s) trouvé(s)
+          <div className="text-xs sm:text-sm text-slate-600 flex items-center font-medium col-span-full sm:col-span-1">
+            {filteredTickets.length} ticket{filteredTickets.length !== 1 ? 's' : ''} trouvé{filteredTickets.length !== 1 ? 's' : ''}
           </div>
         </div>
       </div>
 
       {/* Ticket List */}
-      <div className="bg-white rounded-lg overflow-hidden shadow-sm border border-gray-100">
+      <div className="enterprise-table">
         {filteredTickets.length > 0 ? (
           <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
+            <table className="min-w-full">
+              <thead>
                 <tr>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Ticket

@@ -77,9 +77,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       dispatch({ type: 'REGISTER', payload: user });
       console.log('Registration successful for:', user.email);
       return { success: true };
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Registration error:', error);
-      const message = error?.response?.data?.error || 'Échec de l\'inscription';
+      const message = (error as { response?: { data?: { error?: string } } })?.response?.data?.error || 'Échec de l\'inscription';
       return { success: false, error: message };
     }
   };

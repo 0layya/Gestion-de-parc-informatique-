@@ -42,26 +42,27 @@ const Register: React.FC<RegisterProps> = ({ onToggleMode }) => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen gradient-bg flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8">
-        <div>
-          <div className="mx-auto h-12 w-12 bg-orange-100 rounded-lg flex items-center justify-center">
-            <UserPlus className="h-6 w-6 text-orange-600" />
+        <div className="text-center">
+          <div className="mx-auto h-16 w-16 bg-gradient-to-r from-emerald-500 to-emerald-600 rounded-full flex items-center justify-center shadow-xl shadow-emerald-500/30 floating-element">
+            <UserPlus className="h-8 w-8 text-white" />
           </div>
-          <h2 className="mt-6 text-center text-3xl font-bold text-gray-900">
-            Inscription
+          <h2 className="mt-6 text-3xl font-bold bg-gradient-to-r from-emerald-600 to-emerald-800 bg-clip-text text-transparent">
+            Create Account
           </h2>
-          <p className="mt-2 text-center text-sm text-gray-600">
-            Créer un compte employé
+          <p className="mt-2 text-lg text-slate-600 font-medium">
+            Join the IT Management System
           </p>
         </div>
 
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-          {error && (
-            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
-              {error}
-            </div>
-          )}
+        <div className="glass-modal p-8 floating-element">
+          <form className="space-y-6" onSubmit={handleSubmit}>
+            {error && (
+              <div className="bg-red-100/80 backdrop-blur-sm border border-red-200/50 text-red-800 px-4 py-3 text-sm font-medium rounded-xl">
+                {error}
+              </div>
+            )}
 
           <div className="space-y-4">
             <div>
@@ -154,7 +155,8 @@ const Register: React.FC<RegisterProps> = ({ onToggleMode }) => {
               Déjà un compte ? Se connecter
             </button>
           </div>
-        </form>
+          </form>
+        </div>
       </div>
     </div>
   );

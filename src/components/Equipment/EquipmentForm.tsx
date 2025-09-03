@@ -70,7 +70,7 @@ const EquipmentForm: React.FC<EquipmentFormProps> = ({ equipment, onClose }) => 
         formData.assigned_to === '' || formData.assigned_to === 'stock'
           ? null
           : Number(formData.assigned_to),
-    } as any;
+    };
     if (equipment) {
       updateEquipment(equipment.id, payload);
     } else {

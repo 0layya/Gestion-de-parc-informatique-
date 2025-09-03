@@ -56,8 +56,6 @@ const UserForm: React.FC<UserFormProps> = ({ user, onSubmit, onClose }) => {
         return;
       }
 
-      // Remove password fields from data sent to parent
-      // confirmPassword is used in validation above, but excluded from submission data
       const { password, confirmPassword: _confirmPassword, ...userData } = formData;
       
       // Ensure department_id is properly typed
@@ -73,7 +71,7 @@ const UserForm: React.FC<UserFormProps> = ({ user, onSubmit, onClose }) => {
         // For existing users, don't include password
         await onSubmit(finalUserData);
       }
-    } catch (_err) {
+    } catch {
       setError('Une erreur est survenue lors de la sauvegarde de l\'utilisateur');
     }
 
@@ -103,7 +101,7 @@ const UserForm: React.FC<UserFormProps> = ({ user, onSubmit, onClose }) => {
       
       setShowNewDepartmentForm(false);
       setNewDepartmentData({ name: '', description: '' });
-    } catch (_error) {
+    } catch {
       setError('Erreur lors de la création du département');
     }
   };
