@@ -99,11 +99,11 @@ const EquipmentList: React.FC<EquipmentListProps> = ({ showFormOnMount = false }
   return (
     <div>
       <div className="mb-6 flex justify-between items-center">
-        <h1 className="text-2xl font-bold text-gray-900">Équipements</h1>
+        <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent">Équipements</h1>
         {(user?.role === 'admin' || user?.role === 'it_personnel') && (
           <button
             onClick={() => setShowForm(true)}
-            className="bg-orange-600 text-white px-4 py-2 rounded-lg hover:bg-orange-700 flex items-center space-x-2"
+            className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center space-x-2"
           >
             <Plus className="h-4 w-4" />
             <span>Ajouter un équipement</span>
@@ -122,7 +122,7 @@ const EquipmentList: React.FC<EquipmentListProps> = ({ showFormOnMount = false }
               placeholder="Rechercher..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10 w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-orange-500 focus:border-orange-500"
+              className="pl-10 w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
               autoComplete="off"
             />
           </div>
@@ -130,7 +130,7 @@ const EquipmentList: React.FC<EquipmentListProps> = ({ showFormOnMount = false }
             name="filterType"
             value={filterType}
             onChange={(e) => setFilterType(e.target.value)}
-            className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-orange-500 focus:border-orange-500"
+            className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
             autoComplete="off"
           >
             <option value="">Tous les types</option>
@@ -142,7 +142,7 @@ const EquipmentList: React.FC<EquipmentListProps> = ({ showFormOnMount = false }
             name="filterStatus"
             value={filterStatus}
             onChange={(e) => setFilterStatus(e.target.value)}
-            className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-orange-500 focus:border-orange-500"
+            className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
             autoComplete="off"
           >
             <option value="">Tous les statuts</option>
@@ -154,7 +154,7 @@ const EquipmentList: React.FC<EquipmentListProps> = ({ showFormOnMount = false }
             name="filterLocation"
             value={filterLocation}
             onChange={(e) => setFilterLocation(e.target.value)}
-            className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-orange-500 focus:border-orange-500"
+            className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
             autoComplete="off"
           >
             <option value="">Tous les emplacements</option>
@@ -248,7 +248,7 @@ const EquipmentList: React.FC<EquipmentListProps> = ({ showFormOnMount = false }
                             </button>
                             <button
                               onClick={() => handleEdit(item)}
-                              className="text-orange-600 hover:text-orange-900 p-1 rounded hover:bg-orange-50"
+                              className="text-blue-600 hover:text-blue-900 p-1 rounded hover:bg-blue-50"
                               title="Modifier"
                             >
                               <Edit className="h-4 w-4" />
@@ -308,7 +308,7 @@ const EquipmentList: React.FC<EquipmentListProps> = ({ showFormOnMount = false }
                   handleEdit(selectedEquipment);
                   handleCloseAssignmentModal();
                 }}
-                className="px-4 py-2 bg-orange-600 text-white rounded-md hover:bg-orange-700"
+                className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
               >
                 Modifier
               </button>

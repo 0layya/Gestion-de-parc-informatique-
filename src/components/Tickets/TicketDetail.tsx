@@ -133,7 +133,7 @@ const TicketDetail: React.FC<TicketDetailProps> = ({ ticket, onClose }) => {
 
               {/* Comments */}
               <div className="mb-4">
-                <h3 className="text-xs font-mono uppercase tracking-wider text-black mb-2">Comments</h3>
+                <h3 className="text-xs font-mono uppercase tracking-wider text-black mb-2">Commentaire</h3>
                 <div className="space-y-2">
                   {comments.map((comment) => (
                     <div key={comment.id} className="p-2 bg-gray-100 border border-black">
@@ -171,7 +171,7 @@ const TicketDetail: React.FC<TicketDetailProps> = ({ ticket, onClose }) => {
                       className="industrial-button-orange px-2 py-1 disabled:opacity-50 flex items-center space-x-1"
                     >
                       <MessageCircle className="h-3 w-3" />
-                      <span>Comment</span>
+                      <span>Commentaire</span>
                     </button>
                   </div>
                 </form>
@@ -189,23 +189,23 @@ const TicketDetail: React.FC<TicketDetailProps> = ({ ticket, onClose }) => {
                     <span className="ml-1 font-bold">{ticket.type}</span>
                   </div>
                   <div>
-                    <span className="text-black">Created by:</span>
+                    <span className="text-black">Créer par:</span>
                     <span className="ml-1 font-bold">{creator?.name || 'Unknown'}</span>
                   </div>
                   {assignee && (
                     <div>
-                      <span className="text-black">Assigned:</span>
+                      <span className="text-black">Assigné à:</span>
                       <span className="ml-1 font-bold">{assignee.name}</span>
                     </div>
                   )}
                   <div>
-                    <span className="text-black">Created:</span>
+                    <span className="text-black">Créé:</span>
                     <span className="ml-1 font-bold">
                       {new Date(ticket.created_at).toLocaleDateString('fr-FR')}
                     </span>
                   </div>
                   <div>
-                    <span className="text-black">Updated:</span>
+                    <span className="text-black">Mis à jour:</span>
                     <span className="ml-1 font-bold">
                       {new Date(ticket.updated_at).toLocaleDateString('fr-FR')}
                     </span>
@@ -213,13 +213,13 @@ const TicketDetail: React.FC<TicketDetailProps> = ({ ticket, onClose }) => {
                 </div>
               </div>
 
-              {/* Creator Info */}
+              {/* information du créateur */}
               {isCreator && (
                 <div className="bg-blue-50 p-2 border border-blue-200">
-                  <h3 className="text-xs font-mono uppercase tracking-wider text-blue-800 mb-2">Creator Info</h3>
+                  <h3 className="text-xs font-mono uppercase tracking-wider text-blue-800 mb-2">Information du créateur</h3>
                   <div className="text-xs text-blue-700 font-mono">
-                    <p>You created this ticket</p>
-                    <p className="text-blue-600">You can track its progress here</p>
+                    <p> Vous avez créé ce ticket</p>
+                    <p className="text-blue-600">Vous pouvez suivre son avancement ici</p>
                   </div>
                 </div>
               )}
@@ -231,7 +231,7 @@ const TicketDetail: React.FC<TicketDetailProps> = ({ ticket, onClose }) => {
                   <div className="space-y-2">
                     <div>
                       <label htmlFor="status" className="block text-xs font-mono text-black mb-1">
-                        Status
+                        Statut
                       </label>
                       <select
                         id="status"
@@ -248,7 +248,7 @@ const TicketDetail: React.FC<TicketDetailProps> = ({ ticket, onClose }) => {
                     </div>
                     <div>
                       <label htmlFor="assignedTo" className="block text-xs font-mono text-black mb-1">
-                        Assign to
+                        Assigné à
                       </label>
                       <select
                         id="assignedTo"
@@ -258,7 +258,7 @@ const TicketDetail: React.FC<TicketDetailProps> = ({ ticket, onClose }) => {
                         className="industrial-select w-full px-1 py-1"
                         autoComplete="off"
                       >
-                        <option value="">Unassigned</option>
+                        <option value="">Non assigné</option>
                         {itPersonnel.map(person => (
                           <option key={person.id} value={person.id}>{person.name}</option>
                         ))}
@@ -269,7 +269,7 @@ const TicketDetail: React.FC<TicketDetailProps> = ({ ticket, onClose }) => {
                       className="industrial-button-orange w-full px-2 py-1 flex items-center justify-center space-x-1"
                     >
                       <Edit className="h-3 w-3" />
-                      <span>Update</span>
+                      <span>Mettre à jour</span>
                     </button>
                   </div>
                 </div>

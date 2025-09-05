@@ -124,7 +124,7 @@ const EquipmentForm: React.FC<EquipmentFormProps> = ({ equipment, onClose }) => 
                 required
                 value={formData.name}
                 onChange={handleChange}
-                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-orange-500 focus:border-orange-500 sm:text-sm"
+                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                 placeholder="ex: PC Bureau Marketing"
                 autoComplete="off"
               />
@@ -140,7 +140,7 @@ const EquipmentForm: React.FC<EquipmentFormProps> = ({ equipment, onClose }) => 
                 required
                 value={formData.type}
                 onChange={handleChange}
-                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-orange-500 focus:border-orange-500 sm:text-sm"
+                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                 autoComplete="off"
               >
                 {equipmentTypes.map(type => (
@@ -160,7 +160,7 @@ const EquipmentForm: React.FC<EquipmentFormProps> = ({ equipment, onClose }) => 
                 required
                 value={formData.brand}
                 onChange={handleChange}
-                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-orange-500 focus:border-orange-500 sm:text-sm"
+                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                 placeholder="ex: Dell, HP, Cisco"
                 autoComplete="off"
               />
@@ -177,7 +177,7 @@ const EquipmentForm: React.FC<EquipmentFormProps> = ({ equipment, onClose }) => 
                 required
                 value={formData.model}
                 onChange={handleChange}
-                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-orange-500 focus:border-orange-500 sm:text-sm"
+                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                 placeholder="ex: OptiPlex 7090"
                 autoComplete="off"
               />
@@ -194,7 +194,7 @@ const EquipmentForm: React.FC<EquipmentFormProps> = ({ equipment, onClose }) => 
                 required
                 value={formData.serial_number}
                 onChange={handleChange}
-                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-orange-500 focus:border-orange-500 sm:text-sm"
+                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                 placeholder="ex: SN123456789"
                 autoComplete="off"
               />
@@ -210,7 +210,7 @@ const EquipmentForm: React.FC<EquipmentFormProps> = ({ equipment, onClose }) => 
                 required
                 value={formData.status}
                 onChange={handleChange}
-                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-orange-500 focus:border-orange-500 sm:text-sm"
+                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                 autoComplete="off"
               >
                 {equipmentStatuses.map(status => (
@@ -229,7 +229,7 @@ const EquipmentForm: React.FC<EquipmentFormProps> = ({ equipment, onClose }) => 
                   name="assigned_to"
                   value={formData.assigned_to}
                   onChange={handleChange}
-                  className="block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-orange-500 focus:border-orange-500 sm:text-sm"
+                  className="block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                   autoComplete="off"
                 >
                   <option value="">Non assigné</option>
@@ -280,7 +280,7 @@ const EquipmentForm: React.FC<EquipmentFormProps> = ({ equipment, onClose }) => 
                 required
                 value={formData.location}
                 onChange={handleChange}
-                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-orange-500 focus:border-orange-500 sm:text-sm"
+                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                 placeholder="ex: Bureau 201, Salle serveur"
                 autoComplete="off"
               />
@@ -296,7 +296,7 @@ const EquipmentForm: React.FC<EquipmentFormProps> = ({ equipment, onClose }) => 
                 name="purchase_date"
                 value={formData.purchase_date}
                 onChange={handleChange}
-                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-orange-500 focus:border-orange-500 sm:text-sm"
+                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                 autoComplete="off"
               />
             </div>
@@ -311,7 +311,7 @@ const EquipmentForm: React.FC<EquipmentFormProps> = ({ equipment, onClose }) => 
                 name="warranty_expiry"
                 value={formData.warranty_expiry}
                 onChange={handleChange}
-                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-orange-500 focus:border-orange-500 sm:text-sm"
+                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                 autoComplete="off"
               />
             </div>
@@ -327,7 +327,7 @@ const EquipmentForm: React.FC<EquipmentFormProps> = ({ equipment, onClose }) => 
               rows={3}
               value={formData.notes}
               onChange={handleChange}
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-orange-500 focus:border-orange-500 sm:text-sm"
+                                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
               placeholder="Notes additionnelles..."
               autoComplete="off"
             />
@@ -343,7 +343,7 @@ const EquipmentForm: React.FC<EquipmentFormProps> = ({ equipment, onClose }) => 
             </button>
             <button
               type="submit"
-              className="px-4 py-2 bg-orange-600 text-white rounded-lg text-sm font-medium hover:bg-orange-700 flex items-center space-x-2"
+              className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 flex items-center space-x-2"
             >
               <Save className="h-4 w-4" />
               <span>{equipment ? 'Modifier' : 'Ajouter'}</span>
@@ -380,7 +380,7 @@ const EquipmentForm: React.FC<EquipmentFormProps> = ({ equipment, onClose }) => 
                   required
                   value={newUserData.name}
                   onChange={(e) => setNewUserData({ ...newUserData, name: e.target.value })}
-                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-orange-500 focus:border-orange-500 sm:text-sm"
+                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                   autoComplete="off"
                 />
               </div>
@@ -396,7 +396,7 @@ const EquipmentForm: React.FC<EquipmentFormProps> = ({ equipment, onClose }) => 
                   required
                   value={newUserData.email}
                   onChange={(e) => setNewUserData({ ...newUserData, email: e.target.value })}
-                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-orange-500 focus:border-orange-500 sm:text-sm"
+                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                   autoComplete="off"
                 />
               </div>
@@ -411,7 +411,7 @@ const EquipmentForm: React.FC<EquipmentFormProps> = ({ equipment, onClose }) => 
                   required
                   value={newUserData.role}
                   onChange={(e) => setNewUserData({ ...newUserData, role: e.target.value as 'admin' | 'it_personnel' | 'employee' })}
-                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-orange-500 focus:border-orange-500 sm:text-sm"
+                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                   autoComplete="off"
                 >
                   <option value="employee">Employé</option>
@@ -432,7 +432,7 @@ const EquipmentForm: React.FC<EquipmentFormProps> = ({ equipment, onClose }) => 
                   name="newUserDepartment"
                   value={newUserData.department}
                   onChange={(e) => setNewUserData({ ...newUserData, department: e.target.value })}
-                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-orange-500 focus:border-orange-500 sm:text-sm"
+                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                   autoComplete="off"
                 />
               </div>
@@ -448,7 +448,7 @@ const EquipmentForm: React.FC<EquipmentFormProps> = ({ equipment, onClose }) => 
                   required
                   value={newUserData.password}
                   onChange={(e) => setNewUserData({ ...newUserData, password: e.target.value })}
-                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-orange-500 focus:border-orange-500 sm:text-sm"
+                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                   placeholder="L'utilisateur devra le changer à la première connexion"
                   autoComplete="new-password"
                 />

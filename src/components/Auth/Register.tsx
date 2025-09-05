@@ -21,11 +21,6 @@ const Register: React.FC<RegisterProps> = ({ onToggleMode }) => {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
-    if (name === 'department_id') {
-      const parsed = value === '' ? undefined : Number(value);
-      setFormData({ ...formData, department_id: Number.isNaN(parsed as number) ? undefined : (parsed as number) });
-      return;
-    }
     setFormData({ ...formData, [name]: value });
   };
 
@@ -48,11 +43,11 @@ const Register: React.FC<RegisterProps> = ({ onToggleMode }) => {
           <div className="mx-auto h-16 w-16 bg-gradient-to-r from-emerald-500 to-emerald-600 rounded-full flex items-center justify-center shadow-xl shadow-emerald-500/30 floating-element">
             <UserPlus className="h-8 w-8 text-white" />
           </div>
-          <h2 className="mt-6 text-3xl font-bold bg-gradient-to-r from-emerald-600 to-emerald-800 bg-clip-text text-transparent">
-            Create Account
+          <h2 className="mt-6 text-3xl font-bold bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent">
+            Créer un compte
           </h2>
           <p className="mt-2 text-lg text-slate-600 font-medium">
-            Join the IT Management System
+            
           </p>
         </div>
 
@@ -97,23 +92,7 @@ const Register: React.FC<RegisterProps> = ({ onToggleMode }) => {
                 autoComplete="email"
               />
             </div>
-            <div>
-              <label htmlFor="department_id" className="block text-sm font-medium text-gray-700">
-                Département (ID) <span className="text-gray-400">— optionnel</span>
-              </label>
-              <input
-                id="department_id"
-                name="department_id"
-                type="number"
-                min={1}
-                value={formData.department_id ?? ''}
-                onChange={handleChange}
-                className="mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-orange-500 focus:border-orange-500 focus:z-10 sm:text-sm"
-                placeholder="Ex: 1 pour IT"
-                autoComplete="off"
-              />
-              <p className="mt-1 text-xs text-gray-500">Laissez vide si vous ne connaissez pas l'ID. Un admin pourra l'assigner plus tard.</p>
-            </div>
+
             <div>
               <label htmlFor="password" className="block text-sm font-medium text-gray-700">
                 Mot de passe
@@ -137,10 +116,10 @@ const Register: React.FC<RegisterProps> = ({ onToggleMode }) => {
             <button
               type="submit"
               disabled={loading}
-              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-orange-600 hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 disabled:opacity-50"
+              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-gradient-to-r from-blue-600 to-blue-800 hover:from-blue-700 hover:to-blue-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
             >
               <span className="absolute left-0 inset-y-0 flex items-center pl-3">
-                <UserPlus className="h-5 w-5 text-orange-500 group-hover:text-orange-400" />
+                <UserPlus className="h-5 w-5 text-blue-500 group-hover:text-blue-400" />
               </span>
               {loading ? 'Création...' : 'Créer un compte'}
             </button>
@@ -150,7 +129,7 @@ const Register: React.FC<RegisterProps> = ({ onToggleMode }) => {
             <button
               type="button"
               onClick={onToggleMode}
-              className="text-sm text-orange-600 hover:text-orange-500"
+              className="text-sm text-blue-600 hover:text-blue-500"
             >
               Déjà un compte ? Se connecter
             </button>

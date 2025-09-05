@@ -326,10 +326,10 @@ const Profile: React.FC = () => {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent">
-            Profile Settings
+            Paramètres du compte
           </h1>
           <p className="text-base sm:text-lg text-slate-600 font-medium mt-1">
-            Manage your account information and security
+            
           </p>
         </div>
         <div className="flex items-center space-x-3">
@@ -338,7 +338,7 @@ const Profile: React.FC = () => {
             <span className="text-sm font-medium">{roleInfo.label}</span>
           </div>
           <div className="text-xs sm:text-sm text-slate-500 bg-blue-50/50 px-3 py-2 rounded-lg backdrop-blur-sm">
-            <span className="font-medium">Last updated: {new Date().toLocaleTimeString('fr-FR')}</span>
+            <span className="font-medium">Dernière mise à jour: {new Date().toLocaleTimeString('fr-FR')}</span>
           </div>
         </div>
       </div>
@@ -434,7 +434,7 @@ const Profile: React.FC = () => {
                   className="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 flex items-center space-x-2"
                 >
                   <X className="w-4 h-4" />
-                  <span>Cancel</span>
+                  <span>Annuler</span>
                 </button>
               </div>
             </div>
@@ -450,14 +450,14 @@ const Profile: React.FC = () => {
             <div className="p-2 bg-blue-100 rounded-lg">
               <User className="w-5 h-5 text-blue-600" />
             </div>
-            <h2 className="text-xl font-semibold text-slate-800">Profile Information</h2>
+            <h2 className="text-xl font-semibold text-slate-800">Informations du profil</h2>
           </div>
           
           <form onSubmit={handleProfileUpdate} className="space-y-5 flex-1 flex flex-col">
             <div className="grid grid-cols-1 gap-5 flex-1">
               <div>
                 <label htmlFor="name" className="block text-sm font-medium text-slate-700 mb-2">
-                  Full Name
+                  Nom complet
                 </label>
                 <input
                   type="text"
@@ -473,7 +473,7 @@ const Profile: React.FC = () => {
 
               <div>
                 <label htmlFor="email" className="block text-sm font-medium text-slate-700 mb-2">
-                  Email Address
+                  Adresse e-mail
                 </label>
                 <input
                   type="email"
@@ -489,7 +489,7 @@ const Profile: React.FC = () => {
 
               <div>
                 <label htmlFor="department" className="block text-sm font-medium text-slate-700 mb-2">
-                  Department
+                  Département
                 </label>
                 <div className="space-y-3">
                   <select
@@ -500,7 +500,7 @@ const Profile: React.FC = () => {
                     className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-white/50 backdrop-blur-sm"
                     autoComplete="off"
                   >
-                    <option value="">Select a department</option>
+                    <option value="">Sélectionner un département</option>
                     {departments.map(dept => (
                       <option key={dept.id} value={dept.id}>
                         {dept.name}
@@ -515,14 +515,14 @@ const Profile: React.FC = () => {
                       className="text-sm text-blue-600 hover:text-blue-700 flex items-center space-x-2 transition-colors duration-200"
                     >
                       <Plus className="h-4 w-4" />
-                      <span>Create a new department</span>
+                      <span>Créer un nouveau département</span>
                     </button>
                   ) : (
                     <div className="p-4 border border-slate-200 rounded-lg bg-slate-50/50 backdrop-blur-sm">
                       <div className="space-y-3">
                         <div>
                           <label htmlFor="newDepartmentName" className="block text-xs font-medium text-slate-700">
-                            Department Name *
+                            Nom du département *
                           </label>
                           <input
                             type="text"
@@ -557,7 +557,7 @@ const Profile: React.FC = () => {
                             disabled={!newDepartmentData.name.trim()}
                             className="px-4 py-2 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-all duration-200"
                           >
-                            Create
+                            Créer
                           </button>
                           <button
                             type="button"
@@ -567,7 +567,7 @@ const Profile: React.FC = () => {
                             }}
                             className="px-4 py-2 text-sm bg-slate-300 text-slate-700 rounded-lg hover:bg-slate-400 transition-all duration-200"
                           >
-                            Cancel
+                            Annuler
                           </button>
                         </div>
                       </div>
@@ -578,7 +578,7 @@ const Profile: React.FC = () => {
 
               <div>
                 <label htmlFor="role" className="block text-sm font-medium text-slate-700 mb-2">
-                  Role
+                  Rôle
                 </label>
                 <input
                   type="text"
@@ -599,7 +599,7 @@ const Profile: React.FC = () => {
                 className="flex items-center space-x-2 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-lg hover:shadow-xl"
               >
                 <Save className="w-4 h-4" />
-                <span>{loading ? 'Updating...' : 'Update Profile'}</span>
+                <span>{loading ? 'Updating...' : 'Mettre à jour le profil'}</span>
               </button>
             </div>
           </form>
@@ -611,7 +611,7 @@ const Profile: React.FC = () => {
             <div className="p-2 bg-green-100 rounded-lg">
               <Key className="w-5 h-5 text-green-600" />
             </div>
-            <h2 className="text-xl font-semibold text-slate-800">Change Password</h2>
+            <h2 className="text-xl font-semibold text-slate-800">Changer le mot de passe</h2>
           </div>
           
           <form onSubmit={handlePasswordUpdate} className="space-y-5 flex-1 flex flex-col">
@@ -628,7 +628,7 @@ const Profile: React.FC = () => {
             <div className="space-y-5 flex-1">
               <div>
                 <label htmlFor="currentPassword" className="block text-sm font-medium text-slate-700 mb-2">
-                  Current Password
+                  Mot de passe actuel
                 </label>
                 <div className="relative">
                   <input
@@ -653,7 +653,7 @@ const Profile: React.FC = () => {
 
               <div>
                 <label htmlFor="newPassword" className="block text-sm font-medium text-slate-700 mb-2">
-                  New Password
+                  Nouveau mot de passe
                 </label>
                 <div className="relative">
                   <input
@@ -679,7 +679,7 @@ const Profile: React.FC = () => {
 
               <div>
                 <label htmlFor="confirmPassword" className="block text-sm font-medium text-slate-700 mb-2">
-                  Confirm New Password
+                  Confirmer le nouveau mot de passe
                 </label>
                 <div className="relative">
                   <input
@@ -711,7 +711,7 @@ const Profile: React.FC = () => {
                 className="flex items-center space-x-2 px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-lg hover:shadow-xl"
               >
                 <Lock className="w-4 h-4" />
-                <span>{loading ? 'Updating...' : 'Change Password'}</span>
+                <span>{loading ? 'Updating...' : 'Changer le mot de passe'}</span>
               </button>
             </div>
           </form>

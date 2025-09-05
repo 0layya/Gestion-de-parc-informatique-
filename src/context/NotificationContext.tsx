@@ -1,7 +1,8 @@
 import React, { createContext, useContext, useReducer, useEffect } from 'react';
+import { notificationsAPI } from '../services/api';
 
 export interface Notification {
-  id: string;
+  id: string | number;
   type: 'success' | 'error' | 'warning' | 'info';
   title: string;
   message: string;
@@ -12,6 +13,7 @@ export interface Notification {
   };
   read?: boolean;
   timestamp: Date;
+  user_id?: number;
 }
 
 interface NotificationState {
@@ -21,24 +23,26 @@ interface NotificationState {
 }
 
 interface NotificationContextType extends NotificationState {
-  showNotification: (notification: Omit<Notification, 'id' | 'read' | 'timestamp'>) => void;
-  hideNotification: (id: string) => void;
-  markAsRead: (id: string) => void;
-  markAllAsRead: () => void;
-  clearAll: () => void;
+  showNotification: (notification: Omit<Notification, 'id' | 'read' | 'timestamp' | 'user_id'>) => Promise<void>;
+  hideNotification: (id: string | number) => Promise<void>;
+  markAsRead: (id: string | number) => Promise<void>;
+  markAllAsRead: () => Promise<void>;
+  clearAll: () => Promise<void>;
   toggleMute: () => void;
+  loadNotifications: () => Promise<void>;
 }
 
 const NotificationContext = createContext<NotificationContextType | undefined>(undefined);
 
 type NotificationAction =
   | { type: 'ADD_NOTIFICATION'; payload: Notification }
-  | { type: 'REMOVE_NOTIFICATION'; payload: string }
-  | { type: 'MARK_AS_READ'; payload: string }
+  | { type: 'REMOVE_NOTIFICATION'; payload: string | number }
+  | { type: 'MARK_AS_READ'; payload: string | number }
   | { type: 'MARK_ALL_AS_READ' }
   | { type: 'CLEAR_ALL' }
   | { type: 'TOGGLE_MUTE' }
-  | { type: 'LOAD_FROM_STORAGE'; payload: NotificationState };
+  | { type: 'LOAD_FROM_STORAGE'; payload: NotificationState }
+  | { type: 'LOAD_FROM_API'; payload: Notification[] };
 
 function notificationReducer(state: NotificationState, action: NotificationAction): NotificationState {
   switch (action.type) {
@@ -86,6 +90,12 @@ function notificationReducer(state: NotificationState, action: NotificationActio
       };
     case 'LOAD_FROM_STORAGE':
       return action.payload;
+    case 'LOAD_FROM_API':
+      return {
+        ...state,
+        notifications: action.payload,
+        unreadCount: action.payload.filter(n => !n.read).length,
+      };
     default:
       return state;
   }
@@ -98,26 +108,40 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({ 
     isMuted: false,
   });
 
-  // Load notifications from localStorage on mount
+  // Load notifications from API on mount
   useEffect(() => {
-    try {
-      const stored = localStorage.getItem('notifications');
-      if (stored) {
-        const parsed = JSON.parse(stored);
-        // Convert timestamp strings back to Date objects
-        const notificationsWithDates = parsed.notifications.map((n: { timestamp: string }) => ({
-          ...n,
-          timestamp: new Date(n.timestamp)
-        }));
-        dispatch({ 
-          type: 'LOAD_FROM_STORAGE', 
-          payload: { ...parsed, notifications: notificationsWithDates }
-        });
-      }
-    } catch (error) {
-      console.error('Failed to load notifications from storage:', error);
-    }
+    loadNotifications();
   }, []);
+
+  const loadNotifications = async () => {
+    try {
+      const response = await notificationsAPI.getAll();
+      const notifications = response.data.map((n: any) => ({
+        ...n,
+        timestamp: new Date(n.created_at)
+      }));
+      dispatch({ type: 'LOAD_FROM_API', payload: notifications });
+    } catch (error) {
+      console.error('Failed to load notifications from API:', error);
+      // Fallback to localStorage if API fails
+      try {
+        const stored = localStorage.getItem('notifications');
+        if (stored) {
+          const parsed = JSON.parse(stored);
+          const notificationsWithDates = parsed.notifications.map((n: { timestamp: string }) => ({
+            ...n,
+            timestamp: new Date(n.timestamp)
+          }));
+          dispatch({ 
+            type: 'LOAD_FROM_STORAGE', 
+            payload: { ...parsed, notifications: notificationsWithDates }
+          });
+        }
+      } catch (storageError) {
+        console.error('Failed to load notifications from storage:', storageError);
+      }
+    }
+  };
 
   // Save notifications to localStorage whenever state changes
   useEffect(() => {
@@ -128,7 +152,7 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({ 
     }
   }, [state]);
 
-  const showNotification = (notification: Omit<Notification, 'id' | 'read' | 'timestamp'>) => {
+  const showNotification = async (notification: Omit<Notification, 'id' | 'read' | 'timestamp' | 'user_id'>) => {
     if (state.isMuted) return;
     
     // Check if this notification already exists (prevent duplicates)
@@ -140,36 +164,100 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({ 
     
     if (isDuplicate) return;
     
-    const id = Math.random().toString(36).substr(2, 9);
-    const newNotification = { 
-      ...notification, 
-      id,
-      timestamp: new Date(),
-      read: false
-    };
-    
-    dispatch({ type: 'ADD_NOTIFICATION', payload: newNotification });
-
-    // Remove auto-hide functionality - notifications will persist until manually dismissed
-    // const duration = notification.duration || 5000;
-    // setTimeout(() => {
-    //   hideNotification(id);
-    // }, duration);
+    try {
+      // Get current user ID from localStorage
+      const userData = localStorage.getItem('user');
+      const userId = userData ? JSON.parse(userData).id : null;
+      
+      if (userId) {
+        // Save to database via API using the configured notificationsAPI
+        const response = await notificationsAPI.create({
+          ...notification,
+          user_id: userId
+        });
+        
+        const savedNotification = response.data;
+        const newNotification = { 
+          ...savedNotification, 
+          timestamp: new Date(savedNotification.created_at)
+        };
+        dispatch({ type: 'ADD_NOTIFICATION', payload: newNotification });
+      } else {
+        // Fallback to local storage if no user ID
+        const id = Math.random().toString(36).substr(2, 9);
+        const newNotification = { 
+          ...notification, 
+          id,
+          timestamp: new Date(),
+          read: false
+        };
+        dispatch({ type: 'ADD_NOTIFICATION', payload: newNotification });
+      }
+    } catch (error) {
+      console.error('Failed to save notification:', error);
+      // Fallback to local storage
+      const id = Math.random().toString(36).substr(2, 9);
+      const newNotification = { 
+        ...notification, 
+        id,
+        timestamp: new Date(),
+        read: false
+      };
+      dispatch({ type: 'ADD_NOTIFICATION', payload: newNotification });
+    }
   };
 
-  const hideNotification = (id: string) => {
+  const hideNotification = async (id: string | number) => {
+    try {
+      // Try to delete from database if it's a numeric ID (from database)
+      if (typeof id === 'number') {
+        await notificationsAPI.delete(id.toString());
+      }
+    } catch (error) {
+      console.error('Failed to delete notification from database:', error);
+    }
     dispatch({ type: 'REMOVE_NOTIFICATION', payload: id });
   };
 
-  const markAsRead = (id: string) => {
+  const markAsRead = async (id: string | number) => {
+    try {
+      // Try to mark as read in database if it's a numeric ID (from database)
+      if (typeof id === 'number') {
+        await notificationsAPI.markAsRead(id.toString());
+      }
+    } catch (error) {
+      console.error('Failed to mark notification as read in database:', error);
+    }
     dispatch({ type: 'MARK_AS_READ', payload: id });
   };
 
-  const markAllAsRead = () => {
+  const markAllAsRead = async () => {
+    try {
+      // Mark all unread notifications as read in database
+      const unreadNotifications = state.notifications.filter(n => !n.read && typeof n.id === 'number');
+      await Promise.all(
+        unreadNotifications.map(notification => 
+          notificationsAPI.markAsRead(notification.id.toString())
+        )
+      );
+    } catch (error) {
+      console.error('Failed to mark all notifications as read in database:', error);
+    }
     dispatch({ type: 'MARK_ALL_AS_READ' });
   };
 
-  const clearAll = () => {
+  const clearAll = async () => {
+    try {
+      // Delete all notifications from database
+      const databaseNotifications = state.notifications.filter(n => typeof n.id === 'number');
+      await Promise.all(
+        databaseNotifications.map(notification => 
+          notificationsAPI.delete(notification.id.toString())
+        )
+      );
+    } catch (error) {
+      console.error('Failed to clear all notifications from database:', error);
+    }
     dispatch({ type: 'CLEAR_ALL' });
   };
 
@@ -186,6 +274,7 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({ 
       markAllAsRead,
       clearAll,
       toggleMute,
+      loadNotifications,
     }}>
       {children}
       <NotificationContainer />

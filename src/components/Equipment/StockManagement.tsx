@@ -201,7 +201,7 @@ const StockManagement: React.FC = () => {
   return (
     <div>
       <div className="mb-6 flex justify-between items-center">
-        <h1 className="text-2xl font-bold text-gray-900">Gestion du stock</h1>
+        <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent">Gestion du stock</h1>
         <div className="flex items-center space-x-3">
           <button
             onClick={exportToCSV}
@@ -221,7 +221,7 @@ const StockManagement: React.FC = () => {
           </button>
           <button
             onClick={() => setShowForm(true)}
-            className="bg-orange-600 text-white px-4 py-2 rounded-lg hover:bg-orange-700 flex items-center space-x-2"
+            className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center space-x-2"
           >
             <Plus className="h-4 w-4" />
             <span>Ajouter un équipement</span>
@@ -240,7 +240,7 @@ const StockManagement: React.FC = () => {
               placeholder="Rechercher..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10 w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-orange-500 focus:border-orange-500"
+              className="pl-10 w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
               autoComplete="off"
             />
           </div>
@@ -248,7 +248,7 @@ const StockManagement: React.FC = () => {
             name="filterType"
             value={filterType}
             onChange={(e) => setFilterType(e.target.value)}
-            className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-orange-500 focus:border-orange-500"
+            className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
             autoComplete="off"
           >
             <option value="">Tous les types</option>
@@ -260,7 +260,7 @@ const StockManagement: React.FC = () => {
             name="filterStatus"
             value={filterStatus}
             onChange={(e) => setFilterStatus(e.target.value)}
-            className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-orange-500 focus:border-orange-500"
+            className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
             autoComplete="off"
           >
             <option value="">Tous les statuts</option>
@@ -272,7 +272,7 @@ const StockManagement: React.FC = () => {
             name="filterBrand"
             value={filterBrand}
             onChange={(e) => setFilterBrand(e.target.value)}
-            className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-orange-500 focus:border-orange-500"
+            className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
             autoComplete="off"
           >
             <option value="">Toutes les marques</option>
@@ -354,9 +354,9 @@ const StockManagement: React.FC = () => {
       <div className="bg-white rounded-lg overflow-hidden shadow-sm border border-gray-100">
         {/* Bulk Actions */}
         {selectedEquipment.size > 0 && (
-          <div className="bg-orange-50 border-b border-orange-200 px-6 py-3 flex items-center justify-between">
+          <div className="bg-blue-50 border-b border-blue-200 px-6 py-3 flex items-center justify-between">
             <div className="flex items-center space-x-2">
-              <span className="text-sm text-orange-800">
+              <span className="text-sm text-blue-800">
                 {selectedEquipment.size} équipement(s) sélectionné(s)
               </span>
             </div>
@@ -369,7 +369,7 @@ const StockManagement: React.FC = () => {
               </button>
               <button
                 onClick={() => setSelectedEquipment(new Set())}
-                className="px-3 py-1 text-sm text-orange-600 hover:text-orange-800"
+                className="px-3 py-1 text-sm text-blue-600 hover:text-blue-800"
               >
                 Annuler la sélection
               </button>
@@ -388,7 +388,7 @@ const StockManagement: React.FC = () => {
                       name="selectAll"
                       checked={selectAll}
                       onChange={handleSelectAll}
-                      className="rounded border-gray-300 text-orange-600 focus:ring-orange-500"
+                      className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                     />
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -417,13 +417,13 @@ const StockManagement: React.FC = () => {
                         name={`selectEquipment_${item.id}`}
                         checked={selectedEquipment.has(item.id)}
                         onChange={() => handleSelectEquipment(item.id)}
-                        className="rounded border-gray-300 text-orange-600 focus:ring-orange-500"
+                        className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                       />
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center space-x-3">
-                        <div className="w-10 h-10 bg-orange-100 rounded-full flex items-center justify-center">
-                          <Package className="w-5 h-5 text-orange-600" />
+                        <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                          <Package className="w-5 h-5 text-blue-600" />
                         </div>
                         <div>
                           <div className="text-sm font-medium text-gray-900">{item.name}</div>
@@ -459,7 +459,7 @@ const StockManagement: React.FC = () => {
                       <div className="flex space-x-2">
                         <button
                           onClick={() => handleEdit(item)}
-                          className="text-orange-600 hover:text-orange-900 p-1 rounded hover:bg-orange-50"
+                          className="text-blue-600 hover:text-blue-900 p-1 rounded hover:bg-blue-50"
                           title="Modifier"
                         >
                           <Edit className="h-4 w-4" />
@@ -501,14 +501,14 @@ const StockManagement: React.FC = () => {
                   setFilterStatus('');
                   setFilterBrand('');
                 }}
-                className="mt-3 text-orange-600 hover:text-orange-700 text-sm font-medium"
+                className="mt-3 text-blue-600 hover:text-blue-700 text-sm font-medium"
               >
                 Effacer tous les filtres
               </button>
             ) : (
               <button
                 onClick={() => setShowForm(true)}
-                className="mt-3 bg-orange-600 text-white px-4 py-2 rounded-lg hover:bg-orange-700"
+                className="mt-3 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
               >
                 Ajouter un équipement
               </button>

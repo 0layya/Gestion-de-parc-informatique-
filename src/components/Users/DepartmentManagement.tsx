@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useApp } from '../../context/AppContext';
 import { useNotification } from '../../context/NotificationContext';
-import { Building, Plus, Edit, Trash2, Search, Users, Settings, Calendar, RefreshCw, Check, X } from 'lucide-react';
+import { Building, Plus, Edit, Trash2, Search, Users, Settings, Calendar, Check, X } from 'lucide-react';
 import { Department, DepartmentFormData } from '../../types';
 
 const DepartmentManagement: React.FC = () => {
@@ -178,19 +178,11 @@ const DepartmentManagement: React.FC = () => {
   return (
     <div>
       <div className="mb-6 flex justify-between items-center">
-        <h1 className="text-2xl font-bold text-gray-900">Gestion des départements</h1>
+        <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent">Gestion des départements</h1>
         <div className="flex items-center space-x-3">
           <button
-            onClick={() => loadData()}
-            className="bg-gray-100 text-gray-700 px-3 py-2 rounded-lg hover:bg-gray-200 flex items-center space-x-2"
-            title="Actualiser la liste"
-          >
-            <RefreshCw className="h-4 w-4" />
-            <span>Actualiser</span>
-          </button>
-          <button
             onClick={() => setShowForm(true)}
-            className="bg-orange-600 text-white px-4 py-2 rounded-lg hover:bg-orange-700 flex items-center space-x-2 disabled:opacity-50"
+            className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center space-x-2 disabled:opacity-50"
             disabled={isLoading}
           >
             <Plus className="h-4 w-4" />
@@ -209,7 +201,7 @@ const DepartmentManagement: React.FC = () => {
               placeholder="Rechercher un département..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10 w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-orange-500 focus:border-orange-500"
+              className="pl-10 w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
             />
           </div>
           <div className="text-sm text-gray-600">
@@ -257,8 +249,8 @@ const DepartmentManagement: React.FC = () => {
                     <tr key={department.id} className="hover:bg-gray-50">
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex items-center space-x-3">
-                          <div className="w-10 h-10 bg-orange-100 rounded-full flex items-center justify-center">
-                            <Building className="w-5 h-5 text-orange-600" />
+                          <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                            <Building className="w-5 h-5 text-blue-600" />
                           </div>
                           <div>
                             <div className="text-sm font-medium text-gray-900">{department.name}</div>
@@ -319,7 +311,7 @@ const DepartmentManagement: React.FC = () => {
                           )}
                           <button
                             onClick={() => handleManageUsers(department)}
-                            className="text-xs text-orange-600 hover:text-orange-700 hover:underline"
+                            className="text-xs text-blue-600 hover:text-blue-700 hover:underline"
                             title="Gérer les utilisateurs"
                           >
                             Gérer
@@ -336,7 +328,7 @@ const DepartmentManagement: React.FC = () => {
                         <div className="flex space-x-2">
                           <button
                             onClick={() => handleEdit(department)}
-                            className="text-orange-600 hover:text-orange-900 p-1 rounded hover:bg-orange-50"
+                            className="text-blue-600 hover:text-blue-900 p-1 rounded hover:bg-blue-50"
                             title="Modifier"
                           >
                             <Edit className="h-4 w-4" />
@@ -371,14 +363,14 @@ const DepartmentManagement: React.FC = () => {
             {searchTerm ? (
               <button
                 onClick={() => setSearchTerm('')}
-                className="mt-3 text-orange-600 hover:text-orange-700 text-sm font-medium"
+                className="mt-3 text-blue-600 hover:text-blue-700 text-sm font-medium"
               >
                 Effacer la recherche
               </button>
             ) : (
               <button
                 onClick={() => setShowForm(true)}
-                className="mt-3 bg-orange-600 text-white px-4 py-2 rounded-lg hover:bg-orange-700"
+                className="mt-3 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
               >
                 Ajouter un département
               </button>
@@ -448,8 +440,8 @@ const DepartmentManagement: React.FC = () => {
                   {users.filter(u => u.department_id === selectedDepartment.id).map(user => (
                     <div key={user.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
                       <div className="flex items-center space-x-3">
-                        <div className="w-8 h-8 bg-orange-100 rounded-full flex items-center justify-center">
-                          <span className="text-sm font-medium text-orange-600">
+                        <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                          <span className="text-sm font-medium text-blue-600">
                             {user.name.charAt(0).toUpperCase()}
                           </span>
                         </div>
@@ -588,7 +580,7 @@ const DepartmentForm: React.FC<DepartmentFormProps> = ({ department, onSubmit, o
                 required
                 value={formData.name}
                 onChange={handleChange}
-                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-orange-500 focus:border-orange-500 sm:text-sm"
+                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                 placeholder="ex: IT, Marketing, RH"
                 autoComplete="off"
               />
@@ -603,7 +595,7 @@ const DepartmentForm: React.FC<DepartmentFormProps> = ({ department, onSubmit, o
                 name="manager_id"
                 value={formData.manager_id || ''}
                 onChange={handleChange}
-                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-orange-500 focus:border-orange-500 sm:text-sm"
+                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                 autoComplete="off"
               >
                 <option value="">Aucun manager (peut être assigné plus tard)</option>
@@ -646,7 +638,7 @@ const DepartmentForm: React.FC<DepartmentFormProps> = ({ department, onSubmit, o
                   name="permissions_tickets"
                   checked={formData.permissions.tickets}
                   onChange={() => handlePermissionChange('tickets')}
-                  className="rounded border-gray-300 text-orange-600 focus:ring-orange-500"
+                  className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                 />
                 <span className="text-sm text-gray-700">Gestion des tickets</span>
               </label>
@@ -657,7 +649,7 @@ const DepartmentForm: React.FC<DepartmentFormProps> = ({ department, onSubmit, o
                   name="permissions_equipment"
                   checked={formData.permissions.equipment}
                   onChange={() => handlePermissionChange('equipment')}
-                  className="rounded border-gray-300 text-orange-600 focus:ring-orange-500"
+                  className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                 />
                 <span className="text-sm text-gray-700">Gestion des équipements</span>
               </label>
@@ -668,7 +660,7 @@ const DepartmentForm: React.FC<DepartmentFormProps> = ({ department, onSubmit, o
                   name="permissions_users"
                   checked={formData.permissions.users}
                   onChange={() => handlePermissionChange('users')}
-                  className="rounded border-gray-300 text-orange-600 focus:ring-orange-500"
+                  className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                 />
                 <span className="text-sm text-gray-700">Gestion des utilisateurs</span>
               </label>
@@ -679,7 +671,7 @@ const DepartmentForm: React.FC<DepartmentFormProps> = ({ department, onSubmit, o
                   name="permissions_reports"
                   checked={formData.permissions.reports}
                   onChange={() => handlePermissionChange('reports')}
-                  className="rounded border-gray-300 text-orange-600 focus:ring-orange-500"
+                  className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                 />
                 <span className="text-sm text-gray-700">Accès aux rapports</span>
               </label>
@@ -696,7 +688,7 @@ const DepartmentForm: React.FC<DepartmentFormProps> = ({ department, onSubmit, o
             </button>
             <button
               type="submit"
-              className="px-4 py-2 bg-orange-600 text-white rounded-lg text-sm font-medium hover:bg-orange-700 flex items-center space-x-2"
+              className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 flex items-center space-x-2"
             >
               <Settings className="h-4 w-4" />
               <span>{department ? 'Modifier' : 'Ajouter'}</span>

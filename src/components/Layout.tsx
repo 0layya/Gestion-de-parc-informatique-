@@ -115,10 +115,10 @@ const Layout: React.FC<LayoutProps> = ({ children, currentPage, onPageChange }) 
                   className="h-8 w-8 sm:h-10 sm:w-10 object-contain"
                 />
                 <div className="flex-shrink-0">
-                  <h1 className="text-base sm:text-lg font-bold text-slate-800">
-                    Système de Gestion IT
+                  <h1 className="text-base sm:text-lg font-bold" style={{color: '#36446A'}}>
+                    Parc Informatique
                   </h1>
-                  <p className="text-xs text-slate-500 hidden sm:block">Portail Entreprise</p>
+                  <p className="text-xs text-slate-500 hidden sm:block"></p>
                 </div>
               </div>
             </div>

@@ -123,7 +123,7 @@ const TicketList: React.FC<TicketListProps> = ({ showFormOnMount = false }) => {
             Tickets
           </h1>
           <p className="mt-1 text-base sm:text-lg text-slate-600 font-medium">
-            Gérer et suivre les demandes de support
+           
           </p>
         </div>
         <button
@@ -143,7 +143,7 @@ const TicketList: React.FC<TicketListProps> = ({ showFormOnMount = false }) => {
             <input
               type="text"
               name="searchTerm"
-              placeholder="Search tickets..."
+              placeholder="Chercher tickets..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="glass-input pl-10 w-full"
@@ -157,7 +157,7 @@ const TicketList: React.FC<TicketListProps> = ({ showFormOnMount = false }) => {
             className="glass-select"
             autoComplete="off"
           >
-            <option value="">All Status</option>
+            <option value="">Tous les statuts</option>
             {ticketStatuses.map(status => (
               <option key={status} value={status}>{status}</option>
             ))}
@@ -169,7 +169,7 @@ const TicketList: React.FC<TicketListProps> = ({ showFormOnMount = false }) => {
             className="glass-select"
             autoComplete="off"
           >
-            <option value="">All Priorities</option>
+            <option value="">Toutes priorités</option>
             {ticketPriorities.map(priority => (
               <option key={priority} value={priority}>{priority}</option>
             ))}
@@ -181,7 +181,7 @@ const TicketList: React.FC<TicketListProps> = ({ showFormOnMount = false }) => {
             className="glass-select"
             autoComplete="off"
           >
-            <option value="">All Types</option>
+            <option value="">Tous les types</option>
             {ticketTypes.map(type => (
               <option key={type} value={type}>{type}</option>
             ))}
@@ -193,7 +193,7 @@ const TicketList: React.FC<TicketListProps> = ({ showFormOnMount = false }) => {
             className="glass-select"
             autoComplete="off"
           >
-            <option value="">All Assignees</option>
+            <option value="">Tous assignés</option>
             {uniqueAssignees.map(assigneeId => {
               const assignee = users.find(u => u.id === assigneeId);
               return (

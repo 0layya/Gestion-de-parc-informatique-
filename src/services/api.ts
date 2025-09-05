@@ -90,6 +90,8 @@ export const ticketsAPI = {
 
 export const notificationsAPI = {
   getAll: () => api.get('/notifications'),
+  create: (notificationData: { type: string; title: string; message: string; user_id: number }) => 
+    api.post('/notifications', notificationData),
   markAsRead: (id: string) => api.put(`/notifications/${id}/read`),
   delete: (id: string) => api.delete(`/notifications/${id}`),
 };

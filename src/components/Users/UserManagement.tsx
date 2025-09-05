@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useApp } from '../../context/AppContext';
 import { useAuth } from '../../context/AuthContext';
 import { useNotification } from '../../context/NotificationContext';
-import { Users, Plus, Edit, Trash2, Search, User, Shield, Building, Mail, Calendar, RefreshCw, Key, X } from 'lucide-react';
+import { Users, Plus, Edit, Trash2, Search, User, Shield, Building, Mail, Calendar, Key, X } from 'lucide-react';
 import UserForm from './UserForm';
 import { User as UserType, UserFormData } from '../../types';
 
@@ -263,19 +263,11 @@ const UserManagement: React.FC<UserManagementProps> = ({ showFormOnMount = false
   return (
     <div>
       <div className="mb-6 flex justify-between items-center">
-        <h1 className="text-2xl font-bold text-gray-900">Gestion des utilisateurs</h1>
+        <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent">Gestion des utilisateurs</h1>
         <div className="flex items-center space-x-3">
           <button
-            onClick={() => loadUsers()}
-            className="bg-gray-100 text-gray-700 px-3 py-2 rounded-lg hover:bg-gray-200 flex items-center space-x-2"
-            title="Actualiser la liste"
-          >
-            <RefreshCw className="h-4 w-4" />
-            <span>Actualiser</span>
-          </button>
-          <button
             onClick={() => setShowForm(true)}
-            className="bg-orange-600 text-white px-4 py-2 rounded-lg hover:bg-orange-700 flex items-center space-x-2 disabled:opacity-50"
+            className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center space-x-2 disabled:opacity-50"
             disabled={isLoading}
           >
             <Plus className="h-4 w-4" />
@@ -295,7 +287,7 @@ const UserManagement: React.FC<UserManagementProps> = ({ showFormOnMount = false
               placeholder="Rechercher..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10 w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-orange-500 focus:border-orange-500"
+              className="pl-10 w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
               autoComplete="off"
             />
           </div>
@@ -303,7 +295,7 @@ const UserManagement: React.FC<UserManagementProps> = ({ showFormOnMount = false
             name="filterRole"
             value={filterRole}
             onChange={(e) => setFilterRole(e.target.value)}
-            className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-orange-500 focus:border-orange-500"
+            className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
             autoComplete="off"
             aria-label="Filtrer par rôle"
             title="Filtrer par rôle"
@@ -317,7 +309,7 @@ const UserManagement: React.FC<UserManagementProps> = ({ showFormOnMount = false
             name="filterDepartment"
             value={filterDepartment}
             onChange={(e) => setFilterDepartment(e.target.value)}
-            className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-orange-500 focus:border-orange-500"
+            className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
             autoComplete="off"
             aria-label="Filtrer par département"
             title="Filtrer par département"
@@ -342,9 +334,9 @@ const UserManagement: React.FC<UserManagementProps> = ({ showFormOnMount = false
       <div className="bg-white rounded-lg overflow-hidden shadow-sm border border-gray-100">
         {/* Bulk Actions */}
         {selectedUsers.size > 0 && (
-          <div className="bg-orange-50 border-b border-orange-200 px-6 py-3 flex items-center justify-between">
+          <div className="bg-blue-50 border-b border-blue-200 px-6 py-3 flex items-center justify-between">
             <div className="flex items-center space-x-2">
-              <span className="text-sm text-orange-800">
+              <span className="text-sm text-blue-800">
                 {selectedUsers.size} utilisateur(s) sélectionné(s)
               </span>
             </div>
@@ -357,7 +349,7 @@ const UserManagement: React.FC<UserManagementProps> = ({ showFormOnMount = false
               </button>
               <button
                 onClick={() => setSelectedUsers(new Set())}
-                className="px-3 py-1 text-sm text-orange-600 hover:text-orange-800"
+                className="px-3 py-1 text-sm text-blue-600 hover:text-blue-800"
               >
                 Annuler la sélection
               </button>
@@ -376,7 +368,7 @@ const UserManagement: React.FC<UserManagementProps> = ({ showFormOnMount = false
                       name="selectAll"
                       checked={selectAll}
                       onChange={handleSelectAll}
-                      className="rounded border-gray-300 text-orange-600 focus:ring-orange-500"
+                      className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                       aria-label="Tout sélectionner"
                       title="Tout sélectionner"
                     />
@@ -407,14 +399,14 @@ const UserManagement: React.FC<UserManagementProps> = ({ showFormOnMount = false
                         name={`selectUser_${item.id}`}
                         checked={selectedUsers.has(item.id)}
                         onChange={() => handleSelectUser(item.id)}
-                        className="rounded border-gray-300 text-orange-600 focus:ring-orange-500"
+                        className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                         aria-label={`Sélectionner ${item.name}`}
                         title={`Sélectionner ${item.name}`}
                       />
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center space-x-3">
-                        <div className="w-10 h-10 bg-orange-100 rounded-full flex items-center justify-center">
+                        <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
                           {item.avatar_url ? (
                             <img 
                               src={item.avatar_url} 
@@ -422,7 +414,7 @@ const UserManagement: React.FC<UserManagementProps> = ({ showFormOnMount = false
                               className="w-10 h-10 rounded-full object-cover"
                             />
                           ) : (
-                            <User className="w-5 h-5 text-orange-600" />
+                            <User className="w-5 h-5 text-blue-600" />
                           )}
                         </div>
                         <div>
@@ -462,7 +454,7 @@ const UserManagement: React.FC<UserManagementProps> = ({ showFormOnMount = false
                       <div className="flex space-x-2">
                         <button
                           onClick={() => handleEdit(item)}
-                          className="text-orange-600 hover:text-orange-900 p-1 rounded hover:bg-orange-50"
+                          className="text-blue-600 hover:text-blue-900 p-1 rounded hover:bg-blue-50"
                           title="Modifier"
                         >
                           <Edit className="h-4 w-4" />
@@ -513,14 +505,14 @@ const UserManagement: React.FC<UserManagementProps> = ({ showFormOnMount = false
                   setFilterRole('');
                   setFilterDepartment('');
                 }}
-                className="mt-3 text-orange-600 hover:text-orange-700 text-sm font-medium"
+                className="mt-3 text-blue-600 hover:text-blue-700 text-sm font-medium"
               >
                 Effacer tous les filtres
               </button>
             ) : (
               <button
                 onClick={() => setShowForm(true)}
-                className="mt-3 bg-orange-600 text-white px-4 py-2 rounded-lg hover:bg-orange-700"
+                className="mt-3 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
               >
                 Ajouter un utilisateur
               </button>
@@ -633,7 +625,7 @@ const UserManagement: React.FC<UserManagementProps> = ({ showFormOnMount = false
                 name="newPassword"
                 value={newPassword}
                 onChange={(e) => setNewPassword(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-orange-500 focus:border-orange-500"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
                 placeholder="Nouveau mot de passe"
                 required
                 autoComplete="new-password"
@@ -651,7 +643,7 @@ const UserManagement: React.FC<UserManagementProps> = ({ showFormOnMount = false
               <button
                 onClick={confirmPasswordReset}
                 disabled={!newPassword.trim() || isResettingPassword}
-                className="px-4 py-2 bg-orange-600 text-white rounded-lg text-sm font-medium hover:bg-orange-700 disabled:opacity-50"
+                className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 disabled:opacity-50"
               >
                 {isResettingPassword ? 'Réinitialisation...' : 'Réinitialiser'}
               </button>
