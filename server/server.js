@@ -2009,7 +2009,7 @@ app.delete('/api/notifications/:id', authenticateToken, async (req, res) => {
   try {
     const notificationId = req.params.id;
     
-    /
+    
     const [existingNotifications] = await pool.execute(
       'SELECT id FROM notifications WHERE id = ? AND user_id = ?',
       [notificationId, req.user.id]

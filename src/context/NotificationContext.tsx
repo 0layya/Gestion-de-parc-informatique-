@@ -271,7 +271,7 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({ 
 
   const markAsRead = async (id: string | number) => {
     try {
-      /
+      
       if (typeof id === 'number') {
         await notificationsAPI.markAsRead(id.toString());
       }

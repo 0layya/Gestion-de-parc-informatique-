@@ -278,7 +278,7 @@ export const AppProvider: React.FC<{
       
       await sendTicketNotifications(newTicket);
       
-      /
+      
       setTimeout(() => {
         window.dispatchEvent(new CustomEvent('refreshNotifications'));
       }, 1000);
