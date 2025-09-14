@@ -18,18 +18,18 @@ const PORT = process.env.PORT || 3001;
 
 
 
-// Middleware
+
 app.use(cors());
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 
-// Health check endpoint with detailed status
+
 app.get('/api/health', async (req, res) => {
   try {
-    // Test database connection
+    // Tester la connexion à la base de données
     const connection = await pool.getConnection();
     
-    // Test basic queries
+    // tester l'accès aux tables principales
     const [users] = await connection.execute('SELECT COUNT(*) as count FROM users');
     const [tickets] = await connection.execute('SELECT COUNT(*) as count FROM tickets');
     const [equipment] = await connection.execute('SELECT COUNT(*) as count FROM equipment');
@@ -56,10 +56,10 @@ app.get('/api/health', async (req, res) => {
       error: error.message,
       timestamp: new Date().toISOString()
     });
-  }
+  } 
 });
 
-// Simple notification helper
+// creer une notification pour une liste d'utilisateurs
 async function createNotificationsForUsers(userIds, type, title, message) {
   try {
     if (!Array.isArray(userIds) || userIds.length === 0) return;
@@ -74,21 +74,15 @@ async function createNotificationsForUsers(userIds, type, title, message) {
   }
 }
 
-// Database schema check endpoint
+// chercher la structure de la base de données endpoint
 app.get('/api/debug/schema', async (req, res) => {
   try {
     const connection = await pool.getConnection();
     
-    // Check users table structure
+    
     const [usersColumns] = await connection.execute('DESCRIBE users');
-    
-    // Check tickets table structure
     const [ticketsColumns] = await connection.execute('DESCRIBE tickets');
-    
-    // Check equipment table structure
     const [equipmentColumns] = await connection.execute('DESCRIBE equipment');
-    
-    // Check if avatar_url column exists
     const avatarColumn = usersColumns.find(col => col.Field === 'avatar_url');
     
     connection.release();
@@ -124,12 +118,12 @@ app.get('/api/debug/schema', async (req, res) => {
   }
 });
 
-// Fix database schema endpoint
+// Fixer la structure de la base de données endpoint
 app.post('/api/debug/fix-schema', async (req, res) => {
   try {
     const connection = await pool.getConnection();
     
-    // Check if avatar_url column exists
+    // Chercher la colonne avatar_url dans la table users
     const [columns] = await connection.execute('DESCRIBE users');
     const avatarColumn = columns.find(col => col.Field === 'avatar_url');
     
@@ -145,7 +139,7 @@ app.post('/api/debug/fix-schema', async (req, res) => {
       console.log('avatar_url column already exists with correct type');
     }
     
-    // Check and fix equipment table structure
+    
     const [equipmentColumns] = await connection.execute('DESCRIBE equipment');
     const assignedToColumn = equipmentColumns.find(col => col.Field === 'assigned_to_id');
     
@@ -170,7 +164,7 @@ app.post('/api/debug/fix-schema', async (req, res) => {
   }
 });
 
-// API status endpoint
+
 app.get('/api/status', async (req, res) => {
   try {
     const connection = await pool.getConnection();
@@ -204,7 +198,7 @@ app.get('/api/status', async (req, res) => {
   }
 });
 
-// Test ticket creation endpoint
+
 app.post('/api/debug/test-ticket', async (req, res) => {
   try {
     console.log('=== TESTING TICKET CREATION ===');
@@ -212,7 +206,7 @@ app.post('/api/debug/test-ticket', async (req, res) => {
     
     const { title, description, type, priority, status, created_by } = req.body;
     
-    // Test with minimal data
+    
     const testData = {
       title: title || 'Test Ticket',
       description: description || 'Test Description',
@@ -224,7 +218,7 @@ app.post('/api/debug/test-ticket', async (req, res) => {
     
     console.log('Test data:', testData);
     
-    // Test the INSERT query
+    
     const [result] = await pool.execute(
       'INSERT INTO tickets (title, description, type, priority, status, created_by) VALUES (?, ?, ?, ?, ?, ?)',
       [testData.title, testData.description, testData.type, testData.priority, testData.status, testData.created_by]
@@ -232,7 +226,7 @@ app.post('/api/debug/test-ticket', async (req, res) => {
     
     console.log('Test INSERT successful, ID:', result.insertId);
     
-    // Clean up - delete the test ticket
+    // Nettoyer le ticket de test
     await pool.execute('DELETE FROM tickets WHERE id = ?', [result.insertId]);
     console.log('Test ticket cleaned up');
     
@@ -257,18 +251,18 @@ app.post('/api/debug/test-ticket', async (req, res) => {
   }
 });
 
-// Global error handler
+
 process.on('uncaughtException', (err) => {
   console.error('Uncaught Exception:', err);
-  // Don't exit the process, just log the error
+
 });
 
 process.on('unhandledRejection', (reason, promise) => {
   console.error('Unhandled Rejection at:', promise, 'reason:', reason);
-  // Don't exit the process, just log the error
+  
 });
 
-// Auth middleware
+
 const authenticateToken = (req, res, next) => {
   const authHeader = req.headers['authorization'];
   const token = authHeader && authHeader.split(' ')[1];
@@ -292,7 +286,7 @@ app.post('/api/auth/login', async (req, res) => {
     const { email, password } = req.body;
     console.log('Login attempt for:', email, 'Password provided:', password ? 'Yes' : 'No');
     
-    // Test database connection first
+    
     const connection = await pool.getConnection();
     
     try {
@@ -317,7 +311,7 @@ app.post('/api/auth/login', async (req, res) => {
         return res.status(401).json({ error: 'Invalid credentials' });
       }
 
-      // Normalize JWT expiresIn
+      // Normaliser JWT expiresIn
       let expiresIn = process.env.JWT_EXPIRES_IN;
       if (expiresIn === '1500D') expiresIn = '1500d';
       if (!expiresIn) expiresIn = '7d';
@@ -379,7 +373,7 @@ app.post('/api/auth/register', async (req, res) => {
     
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Sanitize department_id to allow null when not provided
+    
     const sanitizedDepartmentId = (department_id === undefined || department_id === '') ? null : department_id;
 
     const [result] = await pool.execute(
@@ -393,7 +387,7 @@ app.post('/api/auth/register', async (req, res) => {
     );
 
     const user = users[0];
-    // Normalize JWT expiresIn
+    
     let expiresIn = process.env.JWT_EXPIRES_IN;
     if (expiresIn === '1500D') expiresIn = '1500d';
     if (!expiresIn) expiresIn = '7d';
@@ -431,7 +425,7 @@ app.post('/api/auth/register', async (req, res) => {
   }
 });
 
-// Users routes
+
 app.get('/api/users', authenticateToken, async (req, res) => {
   try {
     const [users] = await pool.execute(
@@ -449,7 +443,7 @@ app.post('/api/users', authenticateToken, async (req, res) => {
     console.log('Creating user with data:', req.body);
     const { name, email, password, role, department_id } = req.body;
     
-    // Validate required fields
+    
     if (!name || !email || !password || !role) {
       console.error('Missing required fields:', { name, email, password, role });
       return res.status(400).json({ error: 'Missing required fields' });
@@ -457,7 +451,7 @@ app.post('/api/users', authenticateToken, async (req, res) => {
     
     console.log('Processed user data:', { name, email, role, department_id });
     
-    // Hash the password
+    
     const hashedPassword = await bcrypt.hash(password, 10);
     
     const [result] = await pool.execute(
@@ -470,7 +464,7 @@ app.post('/api/users', authenticateToken, async (req, res) => {
       [result.insertId]
     );
 
-    // Notify admins of new user
+    // Notiffier les admins de la création d'un nouvel utilisateur
     try {
       const [admins] = await pool.execute('SELECT id FROM users WHERE role = ?',[ 'admin' ]);
       await createNotificationsForUsers(admins.map(a => a.id), 'info', 'Nouvel utilisateur', `Utilisateur "${name}" a été créé.`);
@@ -507,21 +501,21 @@ app.get('/api/users/:id', authenticateToken, async (req, res) => {
   }
 });
 
-// Profile management routes - MUST come before /api/users/:id to avoid route conflicts
+
 app.put('/api/users/profile', authenticateToken, async (req, res) => {
   try {
     const { name, email, department_id } = req.body;
     const userId = req.user.id;
     
-    // Input validation
+    
     if (!name || !email) {
       return res.status(400).json({ error: 'Name and email are required' });
     }
     
-    // Handle undefined department_id - convert to null for database
+     
     const sanitizedDepartmentId = department_id === undefined ? null : department_id;
     
-    // Check if email is being changed and if it already exists
+    
     if (email !== req.user.email) {
       const [duplicateUsers] = await pool.execute(
         'SELECT id FROM users WHERE email = ? AND id != ?',
@@ -533,19 +527,19 @@ app.put('/api/users/profile', authenticateToken, async (req, res) => {
       }
     }
     
-    // Update the user profile
+    // mise à jour de l'utilisateur
     await pool.execute(
       'UPDATE users SET name = ?, email = ?, department_id = ? WHERE id = ?',
       [name, email, sanitizedDepartmentId, userId]
     );
     
-    // Get updated user
+    // obtenir l'utilisateur mis à jour
     const [updatedUsers] = await pool.execute(
       'SELECT u.id, u.name, u.email, u.role, u.department_id, d.name as department_name, u.created_at FROM users u LEFT JOIN departments d ON u.department_id = d.id WHERE u.id = ?',
       [userId]
     );
     
-    // Update the user object in the token
+    // mettre à jour l'objet utilisateur dans le token
     const updatedUser = { ...updatedUsers[0] };
     const newToken = jwt.sign(
       { id: updatedUser.id, email: updatedUser.email, role: updatedUser.role },
@@ -579,7 +573,7 @@ app.put('/api/users/password', authenticateToken, async (req, res) => {
       return res.status(400).json({ error: 'New password must be at least 6 characters long' });
     }
     
-    // Get current user with password
+    
     const [users] = await pool.execute(
       'SELECT password FROM users WHERE id = ?',
       [userId]
@@ -589,16 +583,16 @@ app.put('/api/users/password', authenticateToken, async (req, res) => {
       return res.status(404).json({ error: 'User not found' });
     }
     
-    // Verify current password
+    
     const isValidPassword = await bcrypt.compare(currentPassword, users[0].password);
     if (!isValidPassword) {
       return res.status(400).json({ error: 'Current password is incorrect' });
     }
     
-    // Hash new password
+    
     const hashedNewPassword = await bcrypt.hash(newPassword, 10);
     
-    // Update password
+    
     await pool.execute(
       'UPDATE users SET password = ? WHERE id = ?',
       [hashedNewPassword, userId]
@@ -611,7 +605,7 @@ app.put('/api/users/password', authenticateToken, async (req, res) => {
   }
 });
 
-// Avatar upload endpoint
+// mettre à jour l'avatar de l'utilisateur
 app.put('/api/users/avatar', authenticateToken, async (req, res) => {
   try {
     console.log('Avatar update request received for user:', req.user.id);
@@ -627,7 +621,7 @@ app.put('/api/users/avatar', authenticateToken, async (req, res) => {
       return res.status(400).json({ error: 'avatarUrl is required' });
     }
     
-    // Check if avatarUrl is reasonable (max 10MB equivalent in base64)
+    // Limiter la taille de l'URL de l'avatar à 10MB
     if (avatarUrl.length > 10 * 1024 * 1024) {
       return res.status(400).json({ 
         error: 'Avatar URL is too long. Maximum size is 10MB.',
@@ -638,7 +632,7 @@ app.put('/api/users/avatar', authenticateToken, async (req, res) => {
     
     const userId = req.user.id;
     
-    // Update avatar URL
+   
     console.log('Executing UPDATE query for user:', userId);
     console.log('Avatar URL length:', avatarUrl.length);
     
@@ -649,7 +643,7 @@ app.put('/api/users/avatar', authenticateToken, async (req, res) => {
     
     console.log('Update result:', updateResult);
     
-    // Get updated user
+   
     console.log('Executing SELECT query for user:', userId);
     const [updatedUsers] = await pool.execute(
       'SELECT u.id, u.name, u.email, u.role, u.department_id, d.name as department_name, u.avatar_url, u.created_at FROM users u LEFT JOIN departments d ON u.department_id = d.id WHERE u.id = ?',
@@ -658,7 +652,7 @@ app.put('/api/users/avatar', authenticateToken, async (req, res) => {
     console.log('Updated users found:', updatedUsers.length);
     console.log('Updated user data:', updatedUsers[0]);
     
-    // Update the user object in the token
+    
     const updatedUser = { ...updatedUsers[0] };
     console.log('Creating new JWT token for user:', updatedUser.id);
     console.log('JWT_SECRET exists:', !!process.env.JWT_SECRET);
@@ -667,7 +661,7 @@ app.put('/api/users/avatar', authenticateToken, async (req, res) => {
     // Convert JWT_EXPIRES_IN to a valid format if needed
     let expiresIn = process.env.JWT_EXPIRES_IN;
     if (expiresIn === '1500D') {
-      expiresIn = '1500d'; // Ensure lowercase 'd' for days
+      expiresIn = '1500d'; 
     }
     
     try {
@@ -697,7 +691,7 @@ app.put('/api/users/avatar', authenticateToken, async (req, res) => {
 
 app.put('/api/users/:id', authenticateToken, async (req, res) => {
   try {
-    // Authorization check - only admins can update users
+    // Only admins can update other users
     if (req.user.role !== 'admin') {
       return res.status(403).json({ error: 'Only admins can update users' });
     }
@@ -705,7 +699,7 @@ app.put('/api/users/:id', authenticateToken, async (req, res) => {
     const userId = req.params.id;
     const { name, email, role, department_id } = req.body;
     
-    // Check if user exists
+    
     const [existingUsers] = await pool.execute(
       'SELECT id, name, email, role, department_id FROM users WHERE id = ?',
       [userId]
@@ -723,7 +717,7 @@ app.put('/api/users/:id', authenticateToken, async (req, res) => {
     const updatedRole = role !== undefined ? role : existingUser.role;
     const updatedDepartmentId = department_id !== undefined ? department_id : existingUser.department_id;
     
-    // Input validation for fields that are being updated
+    
     if (name !== undefined && !name) {
       return res.status(400).json({ error: 'Name cannot be empty' });
     }
@@ -732,13 +726,13 @@ app.put('/api/users/:id', authenticateToken, async (req, res) => {
       return res.status(400).json({ error: 'Invalid email format' });
     }
     
-    // Role validation
+    // Role de validation
     const validRoles = ['admin', 'it_personnel', 'employee'];
     if (role !== undefined && !validRoles.includes(role)) {
       return res.status(400).json({ error: 'Invalid role' });
     }
     
-    // Check if email is being changed and if it already exists
+    
     if (email !== undefined && email !== existingUser.email) {
       const [duplicateUsers] = await pool.execute(
         'SELECT id FROM users WHERE email = ? AND id != ?',
@@ -750,13 +744,13 @@ app.put('/api/users/:id', authenticateToken, async (req, res) => {
       }
     }
     
-    // Update the user
+    
     await pool.execute(
       'UPDATE users SET name = ?, email = ?, role = ?, department_id = ? WHERE id = ?',
       [updatedName, updatedEmail, updatedRole, updatedDepartmentId, userId]
     );
     
-    // Get updated user
+    
     const [updatedUsers] = await pool.execute(
       'SELECT u.id, u.name, u.email, u.role, u.department_id, d.name as department_name, u.created_at FROM users u LEFT JOIN departments d ON u.department_id = d.id WHERE u.id = ?',
       [userId]
@@ -783,12 +777,12 @@ app.delete('/api/users/:id', authenticateToken, async (req, res) => {
       return res.status(400).json({ error: 'Cannot delete your own account' });
     }
     
-    // Check if user has admin role
+    // Chercher si l'utilisateur à un role admin
     if (req.user.role !== 'admin') {
       return res.status(403).json({ error: 'Only admins can delete users' });
     }
     
-    // Check if user exists
+    
     const [users] = await pool.execute(
       'SELECT id, name, email FROM users WHERE id = ?',
       [userId]
@@ -798,7 +792,7 @@ app.delete('/api/users/:id', authenticateToken, async (req, res) => {
       return res.status(404).json({ error: 'User not found' });
     }
     
-    // Delete the user
+    // Supprimer l'utilisateur
     await pool.execute('DELETE FROM users WHERE id = ?', [userId]);
     
     try {
@@ -814,7 +808,7 @@ app.delete('/api/users/:id', authenticateToken, async (req, res) => {
   }
 });
 
-// Department management routes
+// Departments routes
 app.get('/api/departments', authenticateToken, async (req, res) => {
   try {
     const [departments] = await pool.execute(
@@ -833,7 +827,7 @@ app.get('/api/departments', authenticateToken, async (req, res) => {
   }
 });
 
-// Get single department
+// obtenir un département par id
 app.get('/api/departments/:id', authenticateToken, async (req, res) => {
   try {
     const departmentId = req.params.id;
@@ -860,7 +854,7 @@ app.get('/api/departments/:id', authenticateToken, async (req, res) => {
 
 app.post('/api/departments', authenticateToken, async (req, res) => {
   try {
-    // Only admins can create departments
+    
     if (req.user.role !== 'admin') {
       return res.status(403).json({ error: 'Only admins can create departments' });
     }
@@ -871,7 +865,7 @@ app.post('/api/departments', authenticateToken, async (req, res) => {
       return res.status(400).json({ error: 'Department name is required' });
     }
     
-    // Check if department already exists
+    
     const [existingDepts] = await pool.execute(
       'SELECT id FROM departments WHERE name = ?',
       [name]
@@ -913,7 +907,7 @@ app.post('/api/departments', authenticateToken, async (req, res) => {
 
 app.put('/api/departments/:id', authenticateToken, async (req, res) => {
   try {
-    // Only admins can update departments
+    
     if (req.user.role !== 'admin') {
       return res.status(403).json({ error: 'Only admins can update departments' });
     }
@@ -925,7 +919,7 @@ app.put('/api/departments/:id', authenticateToken, async (req, res) => {
       return res.status(400).json({ error: 'Department name is required' });
     }
     
-    // Check if department exists
+    
     const [existingDepts] = await pool.execute(
       'SELECT id FROM departments WHERE id = ?',
       [departmentId]
@@ -935,7 +929,7 @@ app.put('/api/departments/:id', authenticateToken, async (req, res) => {
       return res.status(404).json({ error: 'Department not found' });
     }
     
-    // Check if new name conflicts with existing departments
+    // Check for name conflicts with other departments
     const [nameConflict] = await pool.execute(
       'SELECT id FROM departments WHERE name = ? AND id != ?',
       [name, departmentId]
@@ -976,14 +970,14 @@ app.put('/api/departments/:id', authenticateToken, async (req, res) => {
 
 app.delete('/api/departments/:id', authenticateToken, async (req, res) => {
   try {
-    // Only admins can delete departments
+    
     if (req.user.role !== 'admin') {
       return res.status(403).json({ error: 'Only admins can delete departments' });
     }
     
     const departmentId = req.params.id;
     
-    // Check if department exists
+   
     const [existingDepts] = await pool.execute(
       'SELECT id FROM departments WHERE id = ?',
       [departmentId]
@@ -1013,7 +1007,7 @@ app.delete('/api/departments/:id', authenticateToken, async (req, res) => {
       return res.status(400).json({ error: 'Cannot delete department that has equipment assigned to it' });
     }
     
-    // Delete the department
+    //supprimer le département
     await pool.execute('DELETE FROM departments WHERE id = ?', [departmentId]);
     
     try {
@@ -1047,20 +1041,20 @@ app.post('/api/equipment', authenticateToken, async (req, res) => {
     console.log('Creating equipment with data:', req.body);
     const { name, type, brand, model, serial_number, status, assigned_to, location, purchase_date, warranty_expiry, notes } = req.body;
     
-    // Validate required fields
+    // Valider les champs requis
     if (!name || !type || !brand || !model || !serial_number || !location) {
       console.error('Missing required fields:', { name, type, brand, model, serial_number, location });
       return res.status(400).json({ error: 'Missing required fields' });
     }
     
-    // Normalize assignment. Accept: '', undefined, 'stock' => NULL; otherwise numeric user id
+
     let cleanAssignedTo = null;
     if (assigned_to !== undefined && assigned_to !== '' && assigned_to !== 'stock' && assigned_to !== null) {
       const parsed = Number(assigned_to);
       if (Number.isNaN(parsed)) {
         return res.status(400).json({ error: 'Invalid assignee ID format' });
       }
-      // Verify user exists
+      
       const [existingUsers] = await pool.execute('SELECT id FROM users WHERE id = ?', [parsed]);
       if (existingUsers.length === 0) {
         return res.status(400).json({ error: 'Assignee not found' });
@@ -1121,7 +1115,7 @@ app.put('/api/equipment/:id', authenticateToken, async (req, res) => {
     const equipmentId = req.params.id;
     const { name, type, brand, model, serial_number, status, assigned_to, location, purchase_date, warranty_expiry, notes } = req.body;
     
-    // Check if equipment exists
+    
     const [existingEquipment] = await pool.execute(
       'SELECT id FROM equipment WHERE id = ?',
       [equipmentId]
@@ -1131,7 +1125,7 @@ app.put('/api/equipment/:id', authenticateToken, async (req, res) => {
       return res.status(404).json({ error: 'Equipment not found' });
     }
     
-    // Check if serial number is being changed and if it already exists
+    
     if (serial_number) {
       const [duplicateEquipment] = await pool.execute(
         'SELECT id FROM equipment WHERE serial_number = ? AND id != ?',
@@ -1143,14 +1137,14 @@ app.put('/api/equipment/:id', authenticateToken, async (req, res) => {
       }
     }
     
-    // Normalize assignment. Accept: '', undefined, 'stock' => NULL; otherwise numeric user id
+
     let cleanAssignedTo = null;
     if (assigned_to !== undefined && assigned_to !== '' && assigned_to !== 'stock' && assigned_to !== null) {
       const parsed = Number(assigned_to);
       if (Number.isNaN(parsed)) {
         return res.status(400).json({ error: 'Invalid assignee ID format' });
       }
-      // Verify user exists
+      
       const [existingUsers] = await pool.execute('SELECT id FROM users WHERE id = ?', [parsed]);
       if (existingUsers.length === 0) {
         return res.status(400).json({ error: 'Assignee not found' });
@@ -1158,7 +1152,7 @@ app.put('/api/equipment/:id', authenticateToken, async (req, res) => {
       cleanAssignedTo = parsed;
     }
     
-    // Update the equipment
+    // mise à jour de l'équipement
     await pool.execute(
       `UPDATE equipment SET 
         name = ?, type = ?, brand = ?, model = ?, serial_number = ?, 
@@ -1168,7 +1162,7 @@ app.put('/api/equipment/:id', authenticateToken, async (req, res) => {
       [name, type, brand, model, serial_number, status, cleanAssignedTo, location, purchase_date, warranty_expiry, notes, equipmentId]
     );
     
-    // Get updated equipment
+    // obtenir l'équipement mis à jour
     const [updatedEquipment] = await pool.execute(
       'SELECT * FROM equipment WHERE id = ?',
       [equipmentId]
@@ -1191,7 +1185,7 @@ app.delete('/api/equipment/:id', authenticateToken, async (req, res) => {
   try {
     const equipmentId = req.params.id;
     
-    // Check if equipment exists
+    
     const [existingEquipment] = await pool.execute(
       'SELECT id, name FROM equipment WHERE id = ?',
       [equipmentId]
@@ -1201,7 +1195,7 @@ app.delete('/api/equipment/:id', authenticateToken, async (req, res) => {
       return res.status(404).json({ error: 'Equipment not found' });
     }
     
-    // Check if equipment is assigned to any tickets
+    
     const [tickets] = await pool.execute(
       'SELECT id FROM tickets WHERE equipment_id = ?',
       [equipmentId]
@@ -1213,7 +1207,7 @@ app.delete('/api/equipment/:id', authenticateToken, async (req, res) => {
       });
     }
     
-    // Delete the equipment
+   
     await pool.execute('DELETE FROM equipment WHERE id = ?', [equipmentId]);
     
     try {
@@ -1229,13 +1223,13 @@ app.delete('/api/equipment/:id', authenticateToken, async (req, res) => {
   }
 });
 
-// Enhanced equipment management
+
 app.put('/api/equipment/:id/assign', authenticateToken, async (req, res) => {
   try {
     const equipmentId = req.params.id;
     const { userId } = req.body;
     
-    // Check if equipment exists
+   
     const [existingEquipment] = await pool.execute(
       'SELECT id, name, status FROM equipment WHERE id = ?',
       [equipmentId]
@@ -1245,7 +1239,7 @@ app.put('/api/equipment/:id/assign', authenticateToken, async (req, res) => {
       return res.status(404).json({ error: 'Equipment not found' });
     }
     
-    // Check if user exists
+    
     if (userId) {
       const [existingUsers] = await pool.execute(
         'SELECT id, name FROM users WHERE id = ?',
@@ -1257,13 +1251,13 @@ app.put('/api/equipment/:id/assign', authenticateToken, async (req, res) => {
       }
     }
     
-    // Update equipment assignment
+    
     await pool.execute(
       'UPDATE equipment SET assigned_to_id = ?, status = ? WHERE id = ?',
       [userId || null, userId ? 'En utilisation' : 'Disponible', equipmentId]
     );
     
-    // Get updated equipment
+    
     const [updatedEquipment] = await pool.execute(
       'SELECT * FROM equipment WHERE id = ?',
       [equipmentId]
@@ -1280,7 +1274,7 @@ app.put('/api/equipment/:id/unassign', authenticateToken, async (req, res) => {
   try {
     const equipmentId = req.params.id;
     
-    // Check if equipment exists
+    
     const [existingEquipment] = await pool.execute(
       'SELECT id, name FROM equipment WHERE id = ?',
       [equipmentId]
@@ -1290,13 +1284,13 @@ app.put('/api/equipment/:id/unassign', authenticateToken, async (req, res) => {
       return res.status(404).json({ error: 'Equipment not found' });
     }
     
-    // Unassign equipment
+    
     await pool.execute(
       'UPDATE equipment SET assigned_to_id = NULL, status = ? WHERE id = ?',
       ['Disponible', equipmentId]
     );
     
-    // Get updated equipment
+    
     const [updatedEquipment] = await pool.execute(
       'SELECT * FROM equipment WHERE id = ?',
       [equipmentId]
@@ -1377,24 +1371,24 @@ app.post('/api/tickets', authenticateToken, async (req, res) => {
     
     const { title, description, type, priority, status, created_by, assigned_to, equipment_id } = req.body;
     
-    // Validate required fields
+    // Valider les champs requis
     if (!title || !description || !type || !priority || !status || !created_by) {
       console.error('Missing required fields:', { title, description, type, priority, status, created_by });
       return res.status(400).json({ error: 'Missing required fields' });
     }
     
-    // Clean up equipment_id - convert empty string to null
+    // Nettoyer les champs optionnels
     const cleanEquipmentId = equipment_id === '' ? null : equipment_id;
     const cleanAssignedTo = assigned_to === '' || assigned_to === undefined ? null : assigned_to;
     
-    // Security check: ensure the user can only create tickets for themselves
+    // chercher à s'assurer que l'utilisateur ne crée pas de ticket pour un autre utilisateur
     if (Number(created_by) !== req.user.id) {
       console.error('Security violation: User trying to create ticket for different user');
       console.error('Token user ID:', req.user.id, 'Requested created_by:', created_by);
       return res.status(400).json({ error: 'You can only create tickets for yourself' });
     }
     
-    // Validate data types
+    
     if (isNaN(Number(created_by))) {
       console.error('Invalid created_by value:', created_by);
       return res.status(400).json({ error: 'Invalid user ID format' });
@@ -1410,14 +1404,14 @@ app.post('/api/tickets', authenticateToken, async (req, res) => {
       return res.status(400).json({ error: 'Invalid assignee ID format' });
     }
     
-    // Verify that the user exists in the database
+    
     const [users] = await pool.execute('SELECT id FROM users WHERE id = ?', [created_by]);
     if (users.length === 0) {
       console.error('User not found in database:', created_by);
       return res.status(400).json({ error: 'User not found' });
     }
     
-    // Verify equipment exists if provided
+    
     if (cleanEquipmentId) {
       const [equipment] = await pool.execute('SELECT id FROM equipment WHERE id = ?', [cleanEquipmentId]);
       if (equipment.length === 0) {
@@ -1426,7 +1420,7 @@ app.post('/api/tickets', authenticateToken, async (req, res) => {
       }
     }
     
-    // Verify assignee exists if provided
+   
     if (cleanAssignedTo) {
       const [assignees] = await pool.execute('SELECT id FROM users WHERE id = ?', [cleanAssignedTo]);
       if (assignees.length === 0) {
@@ -1442,7 +1436,7 @@ app.post('/api/tickets', authenticateToken, async (req, res) => {
       equipment_id: typeof cleanEquipmentId
     });
     
-    // Ensure all values are properly converted to null if undefined
+    // Préparer les valeurs pour l'insertion
     const finalValues = [
       title, 
       description, 
@@ -1471,10 +1465,10 @@ app.post('/api/tickets', authenticateToken, async (req, res) => {
 
     console.log('Retrieved ticket:', ticket[0]);
 
-    // Create notifications for relevant users
+    // créer des notifications pour les utilisateurs concernés
     try {
       const createdTicket = ticket[0];
-      // Fetch potential recipients
+    
       const [allUsers] = await pool.execute(
         'SELECT id, role, department_id, name FROM users'
       );
@@ -1489,7 +1483,7 @@ app.post('/api/tickets', authenticateToken, async (req, res) => {
       if (recipients.length > 0) {
         const title = 'Nouveau ticket créé';
         const message = `Un nouveau ticket "${createdTicket.title}" a été créé.`;
-        // Insert notifications one-by-one to keep it simple and robust
+        
         for (const r of recipients) {
           await pool.execute(
             'INSERT INTO notifications (user_id, type, title, message) VALUES (?, ?, ?, ?)',
@@ -1499,7 +1493,7 @@ app.post('/api/tickets', authenticateToken, async (req, res) => {
       }
     } catch (notifyError) {
       console.error('Failed to create notifications for new ticket:', notifyError);
-      // Do not fail the request because of notification issues
+      
     }
 
     res.status(201).json(ticket[0]);
@@ -1510,7 +1504,7 @@ app.post('/api/tickets', authenticateToken, async (req, res) => {
     console.error('Error Code:', error.errno);
     console.error('Full error object:', JSON.stringify(error, null, 2));
     
-    // Check if it's a foreign key constraint error
+    
     if (error.code === 'ER_NO_REFERENCED_ROW_2') {
       return res.status(400).json({ 
         error: 'Invalid reference data', 
@@ -1518,7 +1512,7 @@ app.post('/api/tickets', authenticateToken, async (req, res) => {
       });
     }
     
-    // Check if it's a data type error
+    
     if (error.code === 'ER_TRUNCATED_WRONG_VALUE_FOR_TYPE') {
       return res.status(400).json({ 
         error: 'Invalid data type', 
@@ -1597,7 +1591,7 @@ app.delete('/api/tickets/:id', authenticateToken, async (req, res) => {
   try {
     const ticketId = req.params.id;
     
-    // Check if ticket exists
+    
     const [existingTickets] = await pool.execute(
       'SELECT id, title, created_by FROM tickets WHERE id = ?',
       [ticketId]
@@ -1609,12 +1603,12 @@ app.delete('/api/tickets/:id', authenticateToken, async (req, res) => {
     
     const ticket = existingTickets[0];
     
-    // Only ticket creator or admin can delete tickets
+    // juste les admins ou le créateur du ticket peuvent supprimer les tickets 
     if (req.user.role !== 'admin' && ticket.created_by !== req.user.id) {
       return res.status(403).json({ error: 'You can only delete your own tickets' });
     }
     
-    // Delete the ticket (comments will be automatically deleted due to CASCADE)
+    // supprimer le ticket
     await pool.execute('DELETE FROM tickets WHERE id = ?', [ticketId]);
     
     res.json({ message: 'Ticket deleted successfully' });
@@ -1624,13 +1618,13 @@ app.delete('/api/tickets/:id', authenticateToken, async (req, res) => {
   }
 });
 
-// Enhanced ticket management
+
 app.put('/api/tickets/:id/assign', authenticateToken, async (req, res) => {
   try {
     const ticketId = req.params.id;
     const { userId } = req.body;
     
-    // Check if ticket exists
+    
     const [existingTickets] = await pool.execute(
       'SELECT id, title, status FROM tickets WHERE id = ?',
       [ticketId]
@@ -1640,7 +1634,7 @@ app.put('/api/tickets/:id/assign', authenticateToken, async (req, res) => {
       return res.status(404).json({ error: 'Ticket not found' });
     }
     
-    // Check if user exists and has appropriate role
+   
     if (userId) {
       const [existingUsers] = await pool.execute(
         'SELECT id, name, role FROM users WHERE id = ?',
@@ -1656,7 +1650,7 @@ app.put('/api/tickets/:id/assign', authenticateToken, async (req, res) => {
       }
     }
     
-    // Update ticket assignment
+    
     await pool.execute(
       'UPDATE tickets SET assigned_to = ?, status = ? WHERE id = ?',
       [userId || null, userId ? 'En cours' : 'Ouvert', ticketId]
@@ -1676,7 +1670,7 @@ app.put('/api/tickets/:id/assign', authenticateToken, async (req, res) => {
       [ticketId]
     );
 
-    // Create a notification for the newly assigned user
+    
     try {
       const updated = updatedTickets[0];
       if (userId) {
@@ -1700,7 +1694,7 @@ app.put('/api/tickets/:id/close', authenticateToken, async (req, res) => {
   try {
     const ticketId = req.params.id;
     
-    // Check if ticket exists
+    
     const [existingTickets] = await pool.execute(
       'SELECT id, title, status, created_by FROM tickets WHERE id = ?',
       [ticketId]
@@ -1712,7 +1706,7 @@ app.put('/api/tickets/:id/close', authenticateToken, async (req, res) => {
     
     const ticket = existingTickets[0];
     
-    // Only ticket creator, assignee, or admin can close tickets
+    // juste les admins ou le créateur du ticket ou l'assigné peuvent fermer les tickets
     if (req.user.role !== 'admin' && 
         ticket.created_by !== req.user.id && 
         ticket.assigned_to !== req.user.id) {
@@ -1762,7 +1756,7 @@ app.put('/api/tickets/:id/escalate', authenticateToken, async (req, res) => {
     
     const ticket = existingTickets[0];
     
-    // Only IT personnel or admin can escalate tickets
+    // juste les admins ou le personnel informatique peuvent escalader les tickets
     if (req.user.role === 'employee') {
       return res.status(403).json({ error: 'Employees cannot escalate tickets' });
     }
@@ -1838,7 +1832,7 @@ app.post('/api/tickets/:id/comments', authenticateToken, async (req, res) => {
       [result.insertId]
     );
 
-    // Notify ticket creator and assignee of the new comment
+   
     try {
       const [ticketsRows] = await pool.execute('SELECT title, created_by, assigned_to FROM tickets WHERE id = ?', [id]);
       if (ticketsRows.length > 0) {
@@ -1862,7 +1856,7 @@ app.put('/api/tickets/:id/comments/:commentId', authenticateToken, async (req, r
     const { id: ticketId, commentId } = req.params;
     const { content } = req.body;
     
-    // Check if comment exists and belongs to the user
+   
     const [existingComments] = await pool.execute(
       'SELECT id, author_id FROM ticket_comments WHERE id = ? AND ticket_id = ?',
       [commentId, ticketId]
@@ -1874,7 +1868,7 @@ app.put('/api/tickets/:id/comments/:commentId', authenticateToken, async (req, r
     
     const comment = existingComments[0];
     
-    // Only comment author or admin can edit comments
+    
     if (req.user.role !== 'admin' && comment.author_id !== req.user.id) {
       return res.status(403).json({ error: 'You can only edit your own comments' });
     }
@@ -1885,7 +1879,7 @@ app.put('/api/tickets/:id/comments/:commentId', authenticateToken, async (req, r
       [content, commentId]
     );
     
-    // Get updated comment
+   
     const [updatedComments] = await pool.execute(
       `SELECT tc.*, u.name as author_name
        FROM ticket_comments tc
@@ -1905,7 +1899,7 @@ app.delete('/api/tickets/:id/comments/:commentId', authenticateToken, async (req
   try {
     const { id: ticketId, commentId } = req.params;
     
-    // Check if comment exists and belongs to the user
+    
     const [existingComments] = await pool.execute(
       'SELECT id, author_id FROM ticket_comments WHERE id = ? AND ticket_id = ?',
       [commentId, ticketId]
@@ -1917,12 +1911,12 @@ app.delete('/api/tickets/:id/comments/:commentId', authenticateToken, async (req
     
     const comment = existingComments[0];
     
-    // Only comment author or admin can delete comments
+    // juste les admins ou l'auteur du commentaire peuvent supprimer les commentaires
     if (req.user.role !== 'admin' && comment.author_id !== req.user.id) {
       return res.status(403).json({ error: 'You can only delete your own comments' });
     }
     
-    // Delete the comment
+    // supprimer le commentaire
     await pool.execute(
       'DELETE FROM ticket_comments WHERE id = ?',
       [commentId]
@@ -1949,11 +1943,46 @@ app.get('/api/notifications', authenticateToken, async (req, res) => {
   }
 });
 
+app.post('/api/notifications', authenticateToken, async (req, res) => {
+  try {
+    const { type, title, message, user_id } = req.body;
+    
+    // Valider les champs requis
+    if (!type || !title || !message) {
+      return res.status(400).json({ error: 'Type, title, and message are required' });
+    }
+    
+    // Utiliser user_id spécifié ou l'ID de l'utilisateur authentifié
+    const targetUserId = user_id || req.user.id;
+    
+    // Valider que l'utilisateur cible existe
+    const validTypes = ['success', 'error', 'warning', 'info'];
+    if (!validTypes.includes(type)) {
+      return res.status(400).json({ error: 'Invalid notification type' });
+    }
+    
+    const [result] = await pool.execute(
+      'INSERT INTO notifications (user_id, type, title, message) VALUES (?, ?, ?, ?)',
+      [targetUserId, type, title, message]
+    );
+    
+    const [notification] = await pool.execute(
+      'SELECT * FROM notifications WHERE id = ?',
+      [result.insertId]
+    );
+    
+    res.status(201).json(notification[0]);
+  } catch (error) {
+    console.error('Create notification error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
 app.put('/api/notifications/:id/read', authenticateToken, async (req, res) => {
   try {
     const notificationId = req.params.id;
     
-    // Check if notification exists and belongs to the user
+    
     const [existingNotifications] = await pool.execute(
       'SELECT id FROM notifications WHERE id = ? AND user_id = ?',
       [notificationId, req.user.id]
@@ -1963,7 +1992,7 @@ app.put('/api/notifications/:id/read', authenticateToken, async (req, res) => {
       return res.status(404).json({ error: 'Notification not found' });
     }
     
-    // Mark notification as read
+    // Marquer la notification comme lue
     await pool.execute(
       'UPDATE notifications SET `read` = TRUE WHERE id = ?',
       [notificationId]
@@ -1980,7 +2009,7 @@ app.delete('/api/notifications/:id', authenticateToken, async (req, res) => {
   try {
     const notificationId = req.params.id;
     
-    // Check if notification exists and belongs to the user
+    /
     const [existingNotifications] = await pool.execute(
       'SELECT id FROM notifications WHERE id = ? AND user_id = ?',
       [notificationId, req.user.id]
@@ -1990,7 +2019,7 @@ app.delete('/api/notifications/:id', authenticateToken, async (req, res) => {
       return res.status(404).json({ error: 'Notification not found' });
     }
     
-    // Delete the notification
+   
     await pool.execute('DELETE FROM notifications WHERE id = ?', [notificationId]);
     
     res.json({ message: 'Notification deleted successfully' });
@@ -2000,21 +2029,6 @@ app.delete('/api/notifications/:id', authenticateToken, async (req, res) => {
   }
 });
 
-// ASCII Art for Olayya
-const olayyaArt = `
-╔══════════════════════════════════════════════════════════════╗
-║                                                              ║
-║    ██████╗ ██╗      █████╗ ██╗   ██╗██╗   ██╗ █████╗         ║
-║   ██╔═══██╗██║     ██╔══██╗╚██╗ ██╔╝╚██╗ ██╔╝██╔══██╗        ║
-║   ██║   ██║██║     ███████║ ╚████╔╝  ╚████╔╝ ███████║        ║
-║   ██║   ██║██║     ██╔══██║  ╚██╔╝    ╚██╔╝  ██╔══██║        ║
-║   ╚██████╔╝███████╗██║  ██║   ██║      ██║   ██║  ██║        ║
-║    ╚═════╝ ╚══════╝╚═╝  ╚═╝   ╚═╝      ╚═╝   ╚═╝  ╚═╝        ║
-║                                                              ║
-║                    Developed by Olayya                       ║
-║                                                              ║
-╚══════════════════════════════════════════════════════════════╝
-`;
 
 // Function to get network IP addresses
 async function getNetworkIPs() {
@@ -2024,7 +2038,7 @@ async function getNetworkIPs() {
 
   for (const name of Object.keys(nets)) {
     for (const net of nets[name]) {
-      // Skip over non-IPv4 and internal (i.e. 127.0.0.1) addresses
+      
       if (net.family === 'IPv4' && !net.internal) {
         results.push({
           interface: name,
@@ -2037,7 +2051,7 @@ async function getNetworkIPs() {
 }
 
 app.listen(PORT, async () => {
-  // Clear console for clean startup
+  
   console.clear();
   
   // Check database connection
@@ -2060,8 +2074,7 @@ app.listen(PORT, async () => {
   console.log(`   APIs:       All endpoints active`);
   console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n');
 
-  // Display Olayya ASCII art
-  console.log(olayyaArt);
+  
 
   // Display access URLs in table format
   console.log('Access URLs:');

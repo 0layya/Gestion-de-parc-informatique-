@@ -15,13 +15,13 @@ const dbConfig = {
 
 const pool = mysql.createPool(dbConfig);
 
-// Test the database connection silently (no console output)
+// Tester la connexion
 pool.getConnection()
   .then(connection => {
     connection.release();
   })
   .catch(err => {
-    // Silent fail - will be handled in server startup
+
   });
 
 export default pool;

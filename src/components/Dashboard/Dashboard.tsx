@@ -40,7 +40,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onPageChange }) => {
     const itPersonnel = users.filter(u => u.role === 'it_personnel').length;
     const employeeUsers = users.filter(u => u.role === 'employee').length;
     
-    // Calculate my tickets for employees
+    // Calculer le nombre de tickets créés par l'utilisateur connecté s'il est employé
     const myTickets = user?.role === 'employee' 
       ? tickets.filter(t => t.created_by === user.id).length 
       : 0;
@@ -358,6 +358,10 @@ const Dashboard: React.FC<DashboardProps> = ({ onPageChange }) => {
                 <div className="flex justify-between items-center text-sm">
                   <span className="text-gray-600">Employés</span>
                   <span className="font-medium text-green-600">{stats.users.employees}</span>
+                </div>
+                <div className="flex justify-between items-center text-sm">
+                  <span className="text-gray-600">Total</span>
+                  <span className="font-medium text-gray-900">{stats.users.total}</span>
                 </div>
               </div>
             </div>

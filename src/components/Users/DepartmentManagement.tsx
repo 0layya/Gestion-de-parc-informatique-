@@ -49,7 +49,8 @@ const DepartmentManagement: React.FC = () => {
           message: `${user.name} a été ajouté au département ${selectedDepartment.name}.`,
         });
       }
-    } catch {
+    } catch (error) {
+      console.error('Error adding user to department:', error);
       showNotification({
         type: 'error',
         title: 'Erreur',
@@ -62,14 +63,15 @@ const DepartmentManagement: React.FC = () => {
     try {
       const user = users.find(u => u.id === userId);
       if (user) {
-        await updateUser(userId, { department_id: undefined });
+        await updateUser(userId, { department_id: null });
         showNotification({
           type: 'success',
           title: 'Utilisateur retiré',
           message: `${user.name} a été retiré du département ${selectedDepartment?.name}.`,
         });
       }
-    } catch {
+    } catch (error) {
+      console.error('Error removing user from department:', error);
       showNotification({
         type: 'error',
         title: 'Erreur',
@@ -82,7 +84,7 @@ const DepartmentManagement: React.FC = () => {
     if (departmentToDelete) {
       setIsDeleting(true);
       try {
-        // Check if department has users
+        
         const hasUsers = users.some(u => u.department_id === departmentToDelete.id);
         if (hasUsers) {
           showNotification({
@@ -90,6 +92,7 @@ const DepartmentManagement: React.FC = () => {
             title: 'Impossible de supprimer',
             message: 'Ce département a des utilisateurs assignés. Réassignez-les d\'abord.',
           });
+          setIsDeleting(false);
           return;
         }
 
@@ -505,7 +508,7 @@ const DepartmentManagement: React.FC = () => {
   );
 };
 
-// Department Form Component
+
 interface DepartmentFormProps {
   department: Department | null;
   onSubmit: (data: DepartmentFormData) => void;

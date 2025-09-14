@@ -10,23 +10,7 @@ const __dirname = path.dirname(__filename);
 
 dotenv.config();
 
-// ASCII Art for Olayya
-const olayyaArt = `
-╔══════════════════════════════════════════════════════════════╗
-║                                                              ║
-║    ██████╗ ██╗      █████╗ ██╗   ██╗██╗   ██╗ █████╗         ║
-║   ██╔═══██╗██║     ██╔══██╗╚██╗ ██╔╝╚██╗ ██╔╝██╔══██╗        ║
-║   ██║   ██║██║     ███████║ ╚████╔╝  ╚████╔╝ ███████║        ║
-║   ██║   ██║██║     ██╔══██║  ╚██╔╝    ╚██╔╝  ██╔══██║        ║
-║   ╚██████╔╝███████╗██║  ██║   ██║      ██║   ██║  ██║        ║
-║    ╚═════╝ ╚══════╝╚═╝  ╚═╝   ╚═╝      ╚═╝   ╚═╝  ╚═╝        ║
-║                                                              ║
-║                    Developed by Olayya                       ║
-║                                                              ║
-╚══════════════════════════════════════════════════════════════╝
-`;
-
-// Function to check if dependencies are installed
+//chercher les dépendances
 function checkDependencies() {
   console.log('Checking dependencies...');
   
@@ -47,7 +31,7 @@ function checkDependencies() {
   return true;
 }
 
-// Function to install dependencies
+// installer les dépendances
 function installDependencies() {
   console.log('Installing dependencies...');
   try {
@@ -60,7 +44,7 @@ function installDependencies() {
   }
 }
 
-// Function to check database connection
+// vérifier la connexion à la base de données
 async function checkDatabase() {
   console.log('Checking database connection...');
   
@@ -78,7 +62,7 @@ async function checkDatabase() {
       password: dbConfig.password
     });
     
-    // Check if database exists
+    // Cheercher si la base de données existe
     const [databases] = await connection.execute('SHOW DATABASES LIKE ?', [dbConfig.database]);
     
     if (databases.length === 0) {
@@ -98,7 +82,7 @@ async function checkDatabase() {
   }
 }
 
-// Function to setup database tables
+// créer les tables dans la base de données
 async function setupDatabase() {
   console.log('Setting up database tables...');
   
@@ -112,7 +96,7 @@ async function setupDatabase() {
   try {
     const connection = await mysql.createConnection(dbConfig);
     
-    // Read and execute the SQL migration file
+    // Lire et exécuter le fichier SQL de migration
     const sqlFilePath = path.join(__dirname, '..', 'DATABASE', 'migrations', '20250809204431_cool_snowflake.sql');
     
     if (fs.existsSync(sqlFilePath)) {
@@ -138,7 +122,7 @@ async function setupDatabase() {
   }
 }
 
-// Function to get network IP addresses
+// récupérer les adresses IP du réseau
 async function getNetworkIPs() {
   const { networkInterfaces } = await import('os');
   const nets = networkInterfaces();
@@ -157,12 +141,12 @@ async function getNetworkIPs() {
   return results;
 }
 
-// Main startup function
+// fonction principale de démarrage
 async function startup() {
   console.clear();
   console.log('\nHelpdesk Ticketing System - Startup Check\n');
   
-  // Check dependencies
+  // Chercher les dépendances
   if (!checkDependencies()) {
     console.log('\nInstalling dependencies...');
     if (!installDependencies()) {
@@ -171,7 +155,7 @@ async function startup() {
     }
   }
   
-  // Check database
+  // chercher la connexion à la base de données
   if (!await checkDatabase()) {
     console.log('\nDatabase connection failed. Please:');
     console.log('   1. Start XAMPP and ensure MySQL service is running');
@@ -180,7 +164,7 @@ async function startup() {
     process.exit(1);
   }
   
-  // Setup database tables
+  // créer les tables dans la base de données
   if (!await setupDatabase()) {
     console.log('\nFailed to setup database tables');
     process.exit(1);
@@ -188,10 +172,9 @@ async function startup() {
   
   console.log('\nAll checks passed! Starting the application...\n');
   
-  // Display Olayya ASCII art
-  console.log(olayyaArt);
+
   
-  // Display access information in table format
+  // Afficher les URLs d'accès
   console.log('Access URLs:');
   console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
   console.log('│ Type      │ URL                                    │');
@@ -199,7 +182,7 @@ async function startup() {
   console.log('│ Local     │ http://localhost:3001                  │');
   console.log('│ Frontend  │ http://localhost:5173                  │');
   
-  // Display network IPs if available
+  // Récupérer et afficher les adresses IP du réseau
   try {
     const networkIPs = await getNetworkIPs();
     if (networkIPs.length > 0) {
@@ -210,13 +193,13 @@ async function startup() {
       });
     }
   } catch (error) {
-    // Network IP detection failed, continue without it
+    // Ignorer les erreurs de récupération des IP
   }
   
   console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n');
   console.log('System ready! Starting servers...\n');
   
-  // Start the application
+  // Démarrer les serveurs
   try {
     execSync('npm run dev:full', { stdio: 'inherit', cwd: path.join(__dirname, '..') });
   } catch (error) {
@@ -225,5 +208,5 @@ async function startup() {
   }
 }
 
-// Run startup
+// Lancer la fonction principale
 startup().catch(console.error);

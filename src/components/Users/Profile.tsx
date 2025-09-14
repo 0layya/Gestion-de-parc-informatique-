@@ -51,13 +51,13 @@ const Profile: React.FC = () => {
         email: user.email || '',
         department_id: user.department_id || undefined
       });
-      // Always set the avatar preview from user data, not from local state
+      
       if (user.avatar_url) {
         setAvatarPreview(user.avatar_url);
       } else {
-        setAvatarPreview(''); // Clear preview if no avatar
+        setAvatarPreview(''); 
       }
-      // Reset file state when user changes
+     
       setAvatarFile(null);
     }
   }, [user]);
@@ -65,7 +65,7 @@ const Profile: React.FC = () => {
   const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      setAvatarFile(file); // Set the file in state
+      setAvatarFile(file); 
       const reader = new FileReader();
       reader.onload = (event: ProgressEvent<FileReader>) => {
         const result = event.target?.result;
@@ -84,7 +84,7 @@ const Profile: React.FC = () => {
         const canvas = document.createElement('canvas');
         const ctx = canvas.getContext('2d');
         
-        // Calculate new dimensions maintaining aspect ratio
+        
         const ratio = Math.min(maxWidth / img.width, maxWidth / img.height);
         const newWidth = img.width * ratio;
         const newHeight = img.height * ratio;
@@ -92,9 +92,9 @@ const Profile: React.FC = () => {
         canvas.width = newWidth;
         canvas.height = newHeight;
         
-        // Draw and compress
+        
         ctx?.drawImage(img, 0, 0, newWidth, newHeight);
-        const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.7); // 70% quality
+        const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.7); 
         resolve(compressedDataUrl);
       };
       img.src = dataUrl;
@@ -107,7 +107,7 @@ const Profile: React.FC = () => {
     setLoading(true);
 
     try {
-      // Compress the image before sending
+      
       const compressedAvatar = await compressImage(avatarPreview);
       console.log('Original size:', avatarPreview.length, 'Compressed size:', compressedAvatar.length);
       
@@ -121,7 +121,7 @@ const Profile: React.FC = () => {
         setMessage('Avatar updated successfully!');
         setError('');
         setAvatarFile(null);
-        // Don't clear avatarPreview here - let the useEffect handle it from updated user data
+
       } else {
         showNotification({
           type: 'error',
@@ -130,7 +130,7 @@ const Profile: React.FC = () => {
         });
         setError('Failed to update avatar. Please try again.');
         setMessage('');
-        // Revert to original avatar on failure
+        
         if (user?.avatar_url) {
           setAvatarPreview(user.avatar_url);
         } else {
@@ -144,7 +144,7 @@ const Profile: React.FC = () => {
         title: 'Erreur',
         message: errorMessage,
       });
-      // Revert to original avatar on error
+      
       if (user?.avatar_url) {
         setAvatarPreview(user.avatar_url);
       } else {
@@ -157,8 +157,7 @@ const Profile: React.FC = () => {
 
   const removeAvatar = () => {
     setAvatarFile(null);
-    // Only revert preview if there's no file selected
-    // Keep the current preview as it might be from a successful upload
+    
   };
 
   const handleProfileUpdate = async (e: React.FormEvent) => {
@@ -273,7 +272,7 @@ const Profile: React.FC = () => {
         }
       });
       
-      // Find the newly created department to get its ID
+      
       const newDept = departments.find(d => d.name === newDepartmentData.name);
       if (newDept) {
         setProfileData(prev => ({ ...prev, department_id: newDept.id }));

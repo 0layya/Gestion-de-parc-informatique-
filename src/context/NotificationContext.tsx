@@ -20,6 +20,7 @@ interface NotificationState {
   notifications: Notification[];
   unreadCount: number;
   isMuted: boolean;
+  isLoading: boolean;
 }
 
 interface NotificationContextType extends NotificationState {
@@ -42,7 +43,8 @@ type NotificationAction =
   | { type: 'CLEAR_ALL' }
   | { type: 'TOGGLE_MUTE' }
   | { type: 'LOAD_FROM_STORAGE'; payload: NotificationState }
-  | { type: 'LOAD_FROM_API'; payload: Notification[] };
+  | { type: 'LOAD_FROM_API'; payload: Notification[] }
+  | { type: 'SET_LOADING'; payload: boolean };
 
 function notificationReducer(state: NotificationState, action: NotificationAction): NotificationState {
   switch (action.type) {
@@ -95,7 +97,15 @@ function notificationReducer(state: NotificationState, action: NotificationActio
         ...state,
         notifications: action.payload,
         unreadCount: action.payload.filter(n => !n.read).length,
+        isLoading: false,
       };
+
+    case 'SET_LOADING':
+      return {
+        ...state,
+        isLoading: action.payload,
+      };
+
     default:
       return state;
   }
@@ -106,24 +116,59 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({ 
     notifications: [],
     unreadCount: 0,
     isMuted: false,
+    isLoading: false,
   });
 
-  // Load notifications from API on mount
+  
   useEffect(() => {
     loadNotifications();
   }, []);
 
+  
+  useEffect(() => {
+    const interval = setInterval(() => {
+      loadNotifications();
+    }, 10000); 
+
+    return () => clearInterval(interval);
+  }, []);
+
+ 
+  useEffect(() => {
+    const handleRefreshNotifications = () => {
+      loadNotifications();
+    };
+
+    window.addEventListener('refreshNotifications', handleRefreshNotifications);
+    return () => {
+      window.removeEventListener('refreshNotifications', handleRefreshNotifications);
+    };
+  }, []);
+
   const loadNotifications = async () => {
     try {
+      dispatch({ type: 'SET_LOADING', payload: true });
+      console.log('Loading notifications from API...');
       const response = await notificationsAPI.getAll();
-      const notifications = response.data.map((n: any) => ({
-        ...n,
-        timestamp: new Date(n.created_at)
-      }));
-      dispatch({ type: 'LOAD_FROM_API', payload: notifications });
+      console.log('Notifications API response:', response.data);
+      
+      if (response.data && Array.isArray(response.data)) {
+        const notifications = response.data.map((n: any) => ({
+          ...n,
+          timestamp: new Date(n.created_at)
+        }));
+        
+        console.log('Processed notifications:', notifications);
+        dispatch({ type: 'LOAD_FROM_API', payload: notifications });
+      } else {
+        console.log('No notifications data received from API');
+        dispatch({ type: 'LOAD_FROM_API', payload: [] });
+      }
     } catch (error) {
       console.error('Failed to load notifications from API:', error);
-      // Fallback to localStorage if API fails
+      console.error('Error details:', error.response?.data);
+      dispatch({ type: 'SET_LOADING', payload: false });
+     
       try {
         const stored = localStorage.getItem('notifications');
         if (stored) {
@@ -143,7 +188,7 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({ 
     }
   };
 
-  // Save notifications to localStorage whenever state changes
+  
   useEffect(() => {
     try {
       localStorage.setItem('notifications', JSON.stringify(state));
@@ -155,7 +200,7 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({ 
   const showNotification = async (notification: Omit<Notification, 'id' | 'read' | 'timestamp' | 'user_id'>) => {
     if (state.isMuted) return;
     
-    // Check if this notification already exists (prevent duplicates)
+    
     const isDuplicate = state.notifications.some(n => 
       n.title === notification.title && 
       n.message === notification.message &&
@@ -165,25 +210,30 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({ 
     if (isDuplicate) return;
     
     try {
-      // Get current user ID from localStorage
+     
       const userData = localStorage.getItem('user');
       const userId = userData ? JSON.parse(userData).id : null;
       
       if (userId) {
-        // Save to database via API using the configured notificationsAPI
+        console.log('Creating notification for user:', userId, notification);
+        
         const response = await notificationsAPI.create({
           ...notification,
           user_id: userId
         });
         
+        console.log('Notification created successfully:', response.data);
         const savedNotification = response.data;
         const newNotification = { 
           ...savedNotification, 
           timestamp: new Date(savedNotification.created_at)
         };
         dispatch({ type: 'ADD_NOTIFICATION', payload: newNotification });
+        
+        
+        await loadNotifications();
       } else {
-        // Fallback to local storage if no user ID
+        
         const id = Math.random().toString(36).substr(2, 9);
         const newNotification = { 
           ...notification, 
@@ -195,7 +245,7 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({ 
       }
     } catch (error) {
       console.error('Failed to save notification:', error);
-      // Fallback to local storage
+      
       const id = Math.random().toString(36).substr(2, 9);
       const newNotification = { 
         ...notification, 
@@ -209,7 +259,7 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({ 
 
   const hideNotification = async (id: string | number) => {
     try {
-      // Try to delete from database if it's a numeric ID (from database)
+      
       if (typeof id === 'number') {
         await notificationsAPI.delete(id.toString());
       }
@@ -221,7 +271,7 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({ 
 
   const markAsRead = async (id: string | number) => {
     try {
-      // Try to mark as read in database if it's a numeric ID (from database)
+      /
       if (typeof id === 'number') {
         await notificationsAPI.markAsRead(id.toString());
       }
@@ -233,7 +283,7 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({ 
 
   const markAllAsRead = async () => {
     try {
-      // Mark all unread notifications as read in database
+      
       const unreadNotifications = state.notifications.filter(n => !n.read && typeof n.id === 'number');
       await Promise.all(
         unreadNotifications.map(notification => 
@@ -248,7 +298,7 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({ 
 
   const clearAll = async () => {
     try {
-      // Delete all notifications from database
+      
       const databaseNotifications = state.notifications.filter(n => typeof n.id === 'number');
       await Promise.all(
         databaseNotifications.map(notification => 
@@ -290,8 +340,8 @@ export const useNotification = () => {
   return context;
 };
 
-// Notification Container Component
+
 const NotificationContainer: React.FC = () => {
-  // Don't render floating notifications - they will only appear in the header dropdown
+  
   return null;
 };

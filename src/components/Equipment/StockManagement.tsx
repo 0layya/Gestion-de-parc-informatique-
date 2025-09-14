@@ -6,7 +6,7 @@ import { Equipment } from '../../types';
 import EquipmentForm from './EquipmentForm';
 
 const StockManagement: React.FC = () => {
-  const { equipment } = useApp();
+  const { equipment, deleteEquipment } = useApp();
   const { showNotification } = useNotification();
   
   const [searchTerm, setSearchTerm] = useState('');
@@ -22,7 +22,7 @@ const StockManagement: React.FC = () => {
   const [selectAll, setSelectAll] = useState(false);
   const [showBulkDeleteModal, setShowBulkDeleteModal] = useState(false);
 
-  // Filter equipment based on search and filters
+  // Filtrer les équipements en fonction des critères de recherche et de filtre
   const filteredEquipment = equipment.filter(item => {
     const matchesSearch = 
       item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -37,12 +37,12 @@ const StockManagement: React.FC = () => {
     return matchesSearch && matchesType && matchesStatus && matchesBrand;
   });
 
-  // Get stock equipment (available or in maintenance)
+  // Ne montrer que les équipements en stock (Disponible ou En maintenance)
   const stockEquipment = filteredEquipment.filter(item => 
     item.status === 'Disponible' || item.status === 'En maintenance'
   );
 
-  // Get unique values for filters
+  // Obtenir des valeurs uniques pour les filtres
   const equipmentTypes = Array.from(new Set(equipment.map(e => e.type))).sort();
   const equipmentStatuses = Array.from(new Set(equipment.map(e => e.status))).sort();
   const equipmentBrands = Array.from(new Set(equipment.map(e => e.brand))).sort();
@@ -61,7 +61,7 @@ const StockManagement: React.FC = () => {
     if (equipmentToDelete) {
       setIsDeleting(true);
       try {
-        // This would typically call an API to delete the equipment
+        await deleteEquipment(equipmentToDelete.id);
         showNotification({
           type: 'success',
           title: 'Équipement supprimé',
@@ -116,7 +116,11 @@ const StockManagement: React.FC = () => {
   const confirmBulkDelete = async () => {
     setIsDeleting(true);
     try {
-      // This would typically call an API to delete multiple equipment
+     
+      for (const equipmentId of selectedEquipment) {
+        await deleteEquipment(equipmentId);
+      }
+      
       showNotification({
         type: 'success',
         title: 'Suppression en masse',

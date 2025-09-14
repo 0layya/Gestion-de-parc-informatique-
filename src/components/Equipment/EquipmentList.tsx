@@ -84,7 +84,7 @@ const EquipmentList: React.FC<EquipmentListProps> = ({ showFormOnMount = false }
   const equipmentTypes = ['PC', 'Laptop', 'Clavier', 'Souris', 'Câble', 'Routeur', 'Switch', 'Serveur', 'Écran', 'Imprimante', 'Autre'];
   const equipmentStatuses = ['Disponible', 'En utilisation', 'En panne', 'En maintenance', 'Retiré'];
   
-  // Get unique locations for filtering
+ 
   const uniqueLocations = Array.from(new Set(equipment.map(eq => eq.location))).sort();
 
   if (showForm) {

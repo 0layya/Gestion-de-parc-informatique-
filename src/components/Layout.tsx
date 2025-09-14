@@ -25,7 +25,7 @@ interface LayoutProps {
 
 const Layout: React.FC<LayoutProps> = ({ children, currentPage, onPageChange }) => {
   const { user, logout } = useAuth();
-  const { notifications, unreadCount, markAsRead, markAllAsRead, hideNotification, clearAll } = useNotification();
+  const { notifications, unreadCount, markAsRead, markAllAsRead, hideNotification, clearAll, isLoading } = useNotification();
   const [showProfileDropdown, setShowProfileDropdown] = useState(false);
   const [showNotificationDropdown, setShowNotificationDropdown] = useState(false);
   const [showMobileMenu, setShowMobileMenu] = useState(false);
@@ -34,7 +34,7 @@ const Layout: React.FC<LayoutProps> = ({ children, currentPage, onPageChange }) 
   const profileRef = useRef<HTMLDivElement>(null);
   const notificationRef = useRef<HTMLDivElement>(null);
 
-  // Close dropdowns when clicking outside
+  
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (profileRef.current && !profileRef.current.contains(event.target as Node)) {
@@ -144,28 +144,39 @@ const Layout: React.FC<LayoutProps> = ({ children, currentPage, onPageChange }) 
                   <div className="absolute right-0 mt-2 w-80 sm:w-96 glass-modal z-50 max-h-80 sm:max-h-96 overflow-y-auto">
                     <div className="p-4 sm:p-6 border-b border-blue-200/30 bg-gradient-to-r from-blue-50/50 to-blue-100/30">
                       <div className="flex items-center justify-between">
-                                              <h3 className="text-lg font-semibold text-slate-800">Notifications</h3>
-                      <div className="flex items-center space-x-3">
-                        {unreadCount > 0 && (
+                        <h3 className="text-lg font-semibold text-slate-800">Notifications</h3>
+                        <div className="flex items-center space-x-3">
                           <button
-                            onClick={markAllAsRead}
+                            onClick={() => {
+                              console.log('Current notifications:', notifications);
+                              console.log('Unread count:', unreadCount);
+                              window.dispatchEvent(new CustomEvent('refreshNotifications'));
+                            }}
                             className="text-sm text-blue-600 hover:text-blue-700 font-medium transition-colors duration-200"
+                            title="Actualiser les notifications"
                           >
-                            Tout marquer comme lu
+                            Actualiser
                           </button>
-                        )}
-                        {notifications.length > 0 && (
-                          <button
-                            onClick={clearAll}
-                            className="text-sm text-red-600 hover:text-red-700 font-medium transition-colors duration-200"
-                          >
-                            Tout effacer
-                          </button>
-                        )}
+                          {unreadCount > 0 && (
+                            <button
+                              onClick={markAllAsRead}
+                              className="text-sm text-blue-600 hover:text-blue-700 font-medium transition-colors duration-200"
+                            >
+                              Tout marquer comme lu
+                            </button>
+                          )}
+                          {notifications.length > 0 && (
+                            <button
+                              onClick={clearAll}
+                              className="text-sm text-red-600 hover:text-red-700 font-medium transition-colors duration-200"
+                            >
+                              Tout effacer
+                            </button>
+                          )}
+                        </div>
                       </div>
-                    </div>
                     <p className="text-sm text-slate-600 mt-2">
-                      {unreadCount > 0 ? `${unreadCount} notification${unreadCount > 1 ? 's' : ''} non lue${unreadCount > 1 ? 's' : ''}` : 'Aucune notification'}
+                      {isLoading ? 'Chargement...' : (unreadCount > 0 ? `${unreadCount} notification${unreadCount > 1 ? 's' : ''} non lue${unreadCount > 1 ? 's' : ''}` : 'Aucune notification')}
                     </p>
                     </div>
                     <div className="divide-y divide-blue-100/50">
@@ -319,6 +330,8 @@ const Layout: React.FC<LayoutProps> = ({ children, currentPage, onPageChange }) 
               <button
                 onClick={() => setShowMobileMenu(false)}
                 className="p-2 text-slate-600 hover:text-slate-800 transition-colors duration-200 rounded-lg hover:bg-slate-100/50"
+                title="Fermer le menu"
+                aria-label="Fermer le menu"
               >
                 <X className="h-5 w-5" />
               </button>
@@ -341,7 +354,7 @@ const Layout: React.FC<LayoutProps> = ({ children, currentPage, onPageChange }) 
                   <button
                     onClick={() => {
                       onPageChange(item.id);
-                      setShowMobileMenu(false); // Close mobile menu on navigation
+                      setShowMobileMenu(false); 
                     }}
                     className={`w-full flex items-center transition-all duration-300 rounded-xl ${
                       sidebarCollapsed 

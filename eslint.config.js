@@ -37,7 +37,7 @@ export default tseslint.config(
       'no-var': 'error'
     }
   },
-  // Configuration for Node.js files (server, scripts)
+  // Configuration pour le fichier node.js
   {
     files: ['**/*.js', 'server/**/*.js', 'scripts/**/*.js'],
     languageOptions: {
@@ -48,8 +48,8 @@ export default tseslint.config(
       }
     },
     rules: {
-      'no-console': 'off', // Allow console in Node.js files
-      'no-undef': 'off', // Node.js globals are available
+      'no-console': 'off', 
+      'no-undef': 'off', 
       'prefer-const': 'error',
       'no-var': 'error'
     }

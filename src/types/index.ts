@@ -3,8 +3,8 @@ export interface User {
   email: string;
   name: string;
   role: 'admin' | 'it_personnel' | 'employee';
-  department_id?: number;
-  department_name?: string; // For display purposes
+  department_id?: number | null;
+  department_name?: string; 
   avatar_url?: string;
   created_at: string;
   created_by?: number;
@@ -12,6 +12,7 @@ export interface User {
 
 export interface UserFormData extends Omit<User, 'id' | 'created_at'> {
   password?: string;
+  department_id?: number | null;
 }
 
 export interface Equipment {
@@ -24,7 +25,7 @@ export interface Equipment {
   status: 'Disponible' | 'En utilisation' | 'En panne' | 'En maintenance' | 'Retiré';
   assigned_to_id?: number;
   department_id?: number;
-  department_name?: string; // For display purposes
+  department_name?: string; 
   location: string;
   purchase_date: string;
   warranty_expiry?: string;
@@ -44,8 +45,8 @@ export interface Ticket {
   equipment_id?: number;
   department_id?: number;
   target_department_id?: number;
-  department_name?: string; // For display purposes
-  target_department_name?: string; // For display purposes
+  department_name?: string; 
+  target_department_name?: string; 
   created_at: string;
   updated_at: string;
   resolved_at?: string;

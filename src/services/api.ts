@@ -7,7 +7,7 @@ const api = axios.create({
   baseURL: API_BASE_URL,
 });
 
-// Add auth token to requests
+// ajout d'un intercepteur pour inclure le token dans les en-têtes
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem('token');
   console.log('API Request to:', config.url);
@@ -25,7 +25,7 @@ api.interceptors.request.use((config) => {
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    // Only reload for authenticated requests that fail (not for login attempts)
+    
     if (error.response?.status === 401 && error.config.url !== '/auth/login') {
       localStorage.removeItem('token');
       localStorage.removeItem('user');

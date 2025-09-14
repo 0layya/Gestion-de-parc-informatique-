@@ -22,15 +22,15 @@ const TicketForm: React.FC<TicketFormProps> = ({ onClose }) => {
   const ticketTypes = ['Incident', 'Demande', 'Panne', 'Remplacement', 'Installation', 'Maintenance'];
   const ticketPriorities = ['Urgente', 'Haute', 'Normale', 'Basse'];
 
-  // Get user's department
+  
   const userDepartment = departments.find(d => d.id === user?.department_id);
   
-  // Get available departments for targeting (IT gets all, others get their own + IT)
+  
   const availableTargetDepartments = departments.filter(dept => {
     if (user?.role === 'admin' || user?.role === 'it_personnel') {
-      return true; // IT personnel can target any department
+      return true; 
     }
-    return dept.id === user?.department_id || dept.name === 'IT'; // Users can target their own dept + IT
+    return dept.id === user?.department_id || dept.name === 'IT'; 
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
@@ -45,7 +45,7 @@ const TicketForm: React.FC<TicketFormProps> = ({ onClose }) => {
     setFormData({
       ...formData,
       equipment_id: equipmentId,
-      // Auto-set target department based on equipment department
+      
       target_department_id: selectedEquipment?.department_id?.toString() || user?.department_id?.toString() || '',
     });
   };
@@ -54,22 +54,22 @@ const TicketForm: React.FC<TicketFormProps> = ({ onClose }) => {
     e.preventDefault();
     if (!user) return;
 
-    // Clean up the data before sending
+    
     const ticketData = {
       ...formData,
       status: 'Ouvert' as const,
       created_by: Number(user.id),
       equipment_id: formData.equipment_id ? Number(formData.equipment_id) : undefined,
-      department_id: user.department_id || undefined, // Creator's department
+      department_id: user.department_id || undefined, 
       target_department_id: formData.target_department_id ? Number(formData.target_department_id) : user.department_id || undefined,
-      assigned_to: undefined, // Always start with no assignee
+      assigned_to: undefined, 
     };
 
     console.log('User object:', user);
     console.log('User ID type:', typeof user.id, 'Value:', user.id);
     console.log('Submitting ticket data:', ticketData);
     
-    // Validate the data before sending
+    
     if (!ticketData.created_by || isNaN(ticketData.created_by)) {
       console.error('Invalid user ID:', ticketData.created_by);
       alert('Erreur: ID utilisateur invalide');
@@ -247,7 +247,7 @@ const TicketForm: React.FC<TicketFormProps> = ({ onClose }) => {
             </button>
             <button
               type="submit"
-              className="px-4 py-2 bg-orange-600 text-white rounded-lg text-sm font-medium hover:bg-orange-700 flex items-center space-x-2"
+              className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 flex items-center space-x-2"
             >
               <Send className="h-4 w-4" />
               <span>Créer le ticket</span>

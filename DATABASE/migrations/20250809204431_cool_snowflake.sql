@@ -1,8 +1,8 @@
--- Create database
+
 CREATE DATABASE IF NOT EXISTS ticketing_system;
 USE ticketing_system;
 
--- Users table
+-- La table des utilisateurs
 CREATE TABLE IF NOT EXISTS users (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
@@ -13,10 +13,10 @@ CREATE TABLE IF NOT EXISTS users (
     avatar_url TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     created_by INT
-    -- Removed foreign key constraint to avoid issues with initial user creation
+
 );
 
--- Departments table
+-- La table des départements
 CREATE TABLE IF NOT EXISTS departments (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(255) NOT NULL UNIQUE,
@@ -27,7 +27,7 @@ CREATE TABLE IF NOT EXISTS departments (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
--- Equipment table
+-- La table des équipements
 CREATE TABLE IF NOT EXISTS equipment (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
@@ -45,7 +45,7 @@ CREATE TABLE IF NOT EXISTS equipment (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- Tickets table
+-- La table des tickets
 CREATE TABLE IF NOT EXISTS tickets (
     id INT AUTO_INCREMENT PRIMARY KEY,
     title VARCHAR(255) NOT NULL,
@@ -63,7 +63,7 @@ CREATE TABLE IF NOT EXISTS tickets (
     resolved_at TIMESTAMP NULL
 );
 
--- Ticket comments table
+-- La table des commentaires de tickets
 CREATE TABLE IF NOT EXISTS ticket_comments (
     id INT AUTO_INCREMENT PRIMARY KEY,
     ticket_id INT NOT NULL,
@@ -72,7 +72,7 @@ CREATE TABLE IF NOT EXISTS ticket_comments (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- Notifications table
+-- La table des notifications
 CREATE TABLE IF NOT EXISTS notifications (
     id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT NOT NULL,
@@ -83,13 +83,11 @@ CREATE TABLE IF NOT EXISTS notifications (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- Ensure avatar_url column exists (for existing databases)
+-- Ajouter les colonnes manquantes si elles n'existent pas déjà
 ALTER TABLE users ADD COLUMN IF NOT EXISTS avatar_url TEXT AFTER department_id;
-
--- Add department_id column if it doesn't exist
 ALTER TABLE users ADD COLUMN IF NOT EXISTS department_id INT AFTER role;
 
--- Insert default departments
+
 INSERT IGNORE INTO departments (id, name, description, permissions) VALUES 
 (1, 'IT', 'Département des technologies de l\'information', '{"tickets": true, "equipment": true, "users": false, "reports": true}'),
 (2, 'Marketing', 'Département marketing et communication', '{"tickets": true, "equipment": false, "users": false, "reports": false}'),

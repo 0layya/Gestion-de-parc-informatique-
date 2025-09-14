@@ -38,7 +38,7 @@ const EquipmentForm: React.FC<EquipmentFormProps> = ({ equipment, onClose }) => 
   const equipmentTypes = ['PC', 'Laptop', 'Clavier', 'Souris', 'Câble', 'Routeur', 'Switch', 'Serveur', 'Écran', 'Imprimante', 'Autre'];
   const equipmentStatuses = ['Disponible', 'En utilisation', 'En panne', 'En maintenance', 'Retiré'];
 
-  // Filter users based on role permissions
+  // Filtrer les utilisateurs en fonction du rôle de l'utilisateur actuel
   const availableUsers = users.filter(u => {
     if (currentUser?.role === 'admin') return true;
     if (currentUser?.role === 'it_personnel') return u.role !== 'admin';
@@ -46,7 +46,7 @@ const EquipmentForm: React.FC<EquipmentFormProps> = ({ equipment, onClose }) => 
   });
 
   useEffect(() => {
-    // Update status based on assignment
+    // mettre à jour le statut en fonction de l'attribution
     if (formData.assigned_to === 'stock') {
       setFormData(prev => ({ ...prev, status: 'Disponible' }));
     } else if (formData.assigned_to && formData.assigned_to !== 'stock') {
@@ -63,7 +63,7 @@ const EquipmentForm: React.FC<EquipmentFormProps> = ({ equipment, onClose }) => 
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Normalize assigned_to for API: '' or 'stock' => null, else number
+   
     const payload = {
       ...formData,
       assigned_to:
@@ -81,8 +81,7 @@ const EquipmentForm: React.FC<EquipmentFormProps> = ({ equipment, onClose }) => 
 
   const handleCreateUser = async (e: React.FormEvent) => {
     e.preventDefault();
-    // This would typically call an API to create the user
-    // For now, we'll just close the form
+    
     setShowUserForm(false);
     setNewUserData({ name: '', email: '', role: 'employee', department: '', password: '' });
   };

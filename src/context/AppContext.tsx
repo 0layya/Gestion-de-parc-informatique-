@@ -211,7 +211,7 @@ export const AppProvider: React.FC<{
   });
 
   useEffect(() => {
-    // Only load data if user is authenticated
+    
     if (isAuthenticated) {
       loadData();
     }
@@ -263,6 +263,7 @@ export const AppProvider: React.FC<{
       dispatch({ type: 'DELETE_EQUIPMENT', payload: id });
     } catch (error) {
       console.error('Delete equipment error:', error);
+      throw error; 
     }
   };
 
@@ -271,11 +272,16 @@ export const AppProvider: React.FC<{
       const response = await ticketsAPI.create(ticketData);
       const newTicket = response.data;
       
-      // Add the new ticket to state
+      
       dispatch({ type: 'CREATE_TICKET', payload: newTicket });
 
-      // Send notifications to relevant department employees
+      
       await sendTicketNotifications(newTicket);
+      
+      /
+      setTimeout(() => {
+        window.dispatchEvent(new CustomEvent('refreshNotifications'));
+      }, 1000);
     } catch (error) {
       console.error('Create ticket error:', error);
     }
@@ -283,19 +289,19 @@ export const AppProvider: React.FC<{
 
   const sendTicketNotifications = async (ticket: Ticket) => {
     try {
-      // Get all users who should be notified about this ticket
+      
       const usersToNotify = state.users.filter(user => {
-        // IT admin and personnel get all tickets
+        
         if (user.role === 'admin' || user.role === 'it_personnel') {
           return true;
         }
         
-        // Other users only get tickets from their department
+        
         if (ticket.target_department_id && user.department_id === ticket.target_department_id) {
           return true;
         }
         
-        // Users also get tickets created in their own department
+        
         if (ticket.department_id && user.department_id === ticket.department_id) {
           return true;
         }
@@ -303,9 +309,9 @@ export const AppProvider: React.FC<{
         return false;
       });
 
-      // Send notifications to each relevant user
+      
       for (const user of usersToNotify) {
-        // Skip the ticket creator
+        
         if (user.id === ticket.created_by) continue;
 
         const notificationData = {
@@ -315,8 +321,7 @@ export const AppProvider: React.FC<{
           message: `Un nouveau ticket "${ticket.title}" a été créé et ciblé vers votre département.`,
         };
 
-        // In a real app, this would call the notifications API
-        // For now, we'll just log it
+        
         console.log('Sending notification to user:', user.name, notificationData);
       }
     } catch (error) {
@@ -345,7 +350,7 @@ export const AppProvider: React.FC<{
   const addTicketComment = async (ticketId: number, content: string) => {
     try {
       await ticketsAPI.addComment(ticketId.toString(), content);
-      // Reload tickets to get updated data
+      
       const response = await ticketsAPI.getAll();
       dispatch({ type: 'SET_TICKETS', payload: response.data });
     } catch (error) {
@@ -355,13 +360,27 @@ export const AppProvider: React.FC<{
 
   const createUser = async (userData: UserFormData) => {
     try {
+      console.log('Creating user with data:', userData);
       const response = await usersAPI.create(userData);
+      console.log('User created successfully:', response.data);
       dispatch({ type: 'CREATE_USER', payload: response.data });
-      // Reload users to get updated data
+      
       const usersRes = await usersAPI.getAll();
       dispatch({ type: 'SET_USERS', payload: usersRes.data });
+      
+      
+      setTimeout(() => {
+        window.dispatchEvent(new CustomEvent('refreshNotifications'));
+      }, 2000);
+      
+      setTimeout(() => {
+        window.dispatchEvent(new CustomEvent('refreshNotifications'));
+      }, 5000);
     } catch (error) {
       console.error('Create user error:', error);
+      console.error('Error details:', error.response?.data);
+    
+      throw error;
     }
   };
 
@@ -369,10 +388,10 @@ export const AppProvider: React.FC<{
     try {
       const response = await usersAPI.update(id.toString(), updates);
       dispatch({ type: 'UPDATE_USER', payload: { id, updates: response.data } });
-      // No need to reload all users - just update the local state
+      
     } catch (error) {
       console.error('Update user error:', error);
-      // Re-throw the error so the calling component can handle it
+      
       throw error;
     }
   };
@@ -390,7 +409,7 @@ export const AppProvider: React.FC<{
     try {
       const response = await departmentsAPI.create(departmentData);
       dispatch({ type: 'CREATE_DEPARTMENT', payload: response.data });
-      // Reload departments to ensure freshness
+      
       const departmentsRes = await departmentsAPI.getAll();
       dispatch({ type: 'SET_DEPARTMENTS', payload: departmentsRes.data });
     } catch (error) {
@@ -402,7 +421,7 @@ export const AppProvider: React.FC<{
     try {
       const response = await departmentsAPI.update(id.toString(), updates as DepartmentFormData);
       dispatch({ type: 'UPDATE_DEPARTMENT', payload: { id, updates: response.data } });
-      // Reload departments to ensure consistency
+      
       const departmentsRes = await departmentsAPI.getAll();
       dispatch({ type: 'SET_DEPARTMENTS', payload: departmentsRes.data });
     } catch (error) {
@@ -414,21 +433,19 @@ export const AppProvider: React.FC<{
     try {
       await departmentsAPI.delete(id.toString());
       dispatch({ type: 'DELETE_DEPARTMENT', payload: id });
-      // Reload departments after deletion
+      
       const departmentsRes = await departmentsAPI.getAll();
       dispatch({ type: 'SET_DEPARTMENTS', payload: departmentsRes.data });
     } catch (error) {
       console.error('Delete department error:', error);
+      throw error; 
     }
   };
 
   const loadUsers = async () => {
     try {
-      const response = await fetch('/api/users');
-      if (response.ok) {
-        const data = await response.json();
-        dispatch({ type: 'SET_USERS', payload: data });
-      }
+      const response = await usersAPI.getAll();
+      dispatch({ type: 'SET_USERS', payload: response.data });
     } catch (error: unknown) {
       console.error('Error loading users:', error);
     }

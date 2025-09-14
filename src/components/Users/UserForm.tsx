@@ -17,7 +17,7 @@ const UserForm: React.FC<UserFormProps> = ({ user, onSubmit, onClose }) => {
     name: user?.name || '',
     email: user?.email || '',
     role: user?.role || 'employee',
-    department_id: user?.department_id || '',
+    department_id: user?.department_id || null,
     password: '',
     confirmPassword: '',
   });
@@ -32,7 +32,7 @@ const UserForm: React.FC<UserFormProps> = ({ user, onSubmit, onClose }) => {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     setFormData({
       ...formData,
-      [e.target.name]: e.target.name === 'department_id' ? Number(e.target.value) || undefined : e.target.value,
+      [e.target.name]: e.target.name === 'department_id' ? (e.target.value ? Number(e.target.value) : null) : e.target.value,
     });
   };
 
@@ -42,37 +42,72 @@ const UserForm: React.FC<UserFormProps> = ({ user, onSubmit, onClose }) => {
     setLoading(true);
 
     try {
-      // Validate passwords match for new users
+      // Valider les mots de passe pour les nouveaux utilisateurs
       if (!user && formData.password !== formData.confirmPassword) {
         setError('Les mots de passe ne correspondent pas');
         setLoading(false);
         return;
       }
 
-      // Validate password strength for new users
-      if (!user && formData.password && formData.password.length < 6) {
+      // Valider la longueur minimale du mot de passe pour les nouveaux utilisateurs
+      if (!user && (!formData.password || formData.password.length < 6)) {
         setError('Le mot de passe doit contenir au moins 6 caractères');
+        setLoading(false);
+        return;
+      }
+
+      // Valider le format de l'email
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(formData.email)) {
+        setError('Veuillez entrer une adresse email valide');
+        setLoading(false);
+        return;
+      }
+
+      // Valider les champs requis
+      if (!formData.name.trim()) {
+        setError('Le nom est requis');
+        setLoading(false);
+        return;
+      }
+
+      if (!formData.email.trim()) {
+        setError('L\'email est requis');
+        setLoading(false);
+        return;
+      }
+
+      if (!formData.role) {
+        setError('Le rôle est requis');
         setLoading(false);
         return;
       }
 
       const { password, confirmPassword: _confirmPassword, ...userData } = formData;
       
-      // Ensure department_id is properly typed
+      
       const finalUserData = {
         ...userData,
-        department_id: userData.department_id ? Number(userData.department_id) : undefined
+        department_id: userData.department_id ? Number(userData.department_id) : null
       };
       
       if (!user) {
-        // For new users, include password
+       
         await onSubmit({ ...finalUserData, password });
       } else {
-        // For existing users, don't include password
+        
         await onSubmit(finalUserData);
       }
-    } catch {
-      setError('Une erreur est survenue lors de la sauvegarde de l\'utilisateur');
+    } catch (error: any) {
+      console.error('Form submission error:', error);
+      
+      if (error.response?.data?.error) {
+        setError(error.response.data.error);
+      } else if (error.message) {
+        setError(error.message);
+      } else {
+        setError('Une erreur est survenue lors de la sauvegarde de l\'utilisateur');
+      }
     }
 
     setLoading(false);
@@ -93,7 +128,7 @@ const UserForm: React.FC<UserFormProps> = ({ user, onSubmit, onClose }) => {
         }
       });
       
-      // Find the newly created department to get its ID
+      
       const newDept = departments.find(d => d.name === newDepartmentData.name);
       if (newDept) {
         setFormData(prev => ({ ...prev, department_id: newDept.id }));
@@ -118,7 +153,10 @@ const UserForm: React.FC<UserFormProps> = ({ user, onSubmit, onClose }) => {
         { value: 'employee', label: 'Employé' },
       ];
     }
-    return [];
+    
+    return [
+      { value: 'employee', label: 'Employé' },
+    ];
   };
 
   const availableRoles = getAvailableRoles();
@@ -133,6 +171,8 @@ const UserForm: React.FC<UserFormProps> = ({ user, onSubmit, onClose }) => {
           <button
             onClick={onClose}
             className="text-gray-400 hover:text-gray-600"
+            title="Fermer"
+            aria-label="Fermer"
           >
             <X className="h-6 w-6" />
           </button>
@@ -160,6 +200,7 @@ const UserForm: React.FC<UserFormProps> = ({ user, onSubmit, onClose }) => {
                 className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-orange-500 focus:border-orange-500 sm:text-sm"
                 placeholder="Nom complet de l'utilisateur"
                 autoComplete="name"
+                title="Nom complet de l'utilisateur"
               />
             </div>
 
@@ -207,10 +248,12 @@ const UserForm: React.FC<UserFormProps> = ({ user, onSubmit, onClose }) => {
                 <select
                   id="department_id"
                   name="department_id"
-                  value={formData.department_id}
+                  value={formData.department_id || ''}
                   onChange={handleChange}
                   className="block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-orange-500 focus:border-orange-500 sm:text-sm"
                   autoComplete="off"
+                  title="Sélectionner un département"
+                  aria-label="Sélectionner un département"
                 >
                   <option value="">Sélectionner un département</option>
                   {departments.map(dept => (
@@ -245,6 +288,7 @@ const UserForm: React.FC<UserFormProps> = ({ user, onSubmit, onClose }) => {
                           className="mt-1 block w-full px-2 py-1 text-sm border border-gray-300 rounded focus:ring-orange-500 focus:border-orange-500"
                           placeholder="ex: RH, Finance, Ventes"
                           autoComplete="off"
+                          title="Nom du nouveau département"
                         />
                       </div>
                       <div>
@@ -350,7 +394,7 @@ const UserForm: React.FC<UserFormProps> = ({ user, onSubmit, onClose }) => {
             <button
               type="submit"
               disabled={loading}
-              className="px-4 py-2 bg-orange-600 text-white rounded-lg text-sm font-medium hover:bg-orange-700 disabled:opacity-50 flex items-center space-x-2"
+              className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 disabled:opacity-50 flex items-center space-x-2"
             >
               <Save className="h-4 w-4" />
               <span>{loading ? 'Création...' : (user ? 'Modifier' : 'Créer')}</span>

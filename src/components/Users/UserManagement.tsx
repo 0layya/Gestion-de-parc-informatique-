@@ -89,7 +89,7 @@ const UserManagement: React.FC<UserManagementProps> = ({ showFormOnMount = false
     setIsLoading(true);
     try {
       if (editingUser) {
-        // Update existing user
+        // mise à jour de l'utilisateur existant
         await updateUser(editingUser.id, userData);
         showNotification({
           type: 'success',
@@ -97,7 +97,7 @@ const UserManagement: React.FC<UserManagementProps> = ({ showFormOnMount = false
           message: `L'utilisateur ${userData.name} a été mis à jour avec succès.`,
         });
       } else {
-        // Create new user
+        // Créer un nouvel utilisateur
         await createUser(userData);
         showNotification({
           type: 'success',
@@ -106,12 +106,14 @@ const UserManagement: React.FC<UserManagementProps> = ({ showFormOnMount = false
         });
       }
       handleCloseForm();
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error saving user:', error);
+     
+      const errorMessage = error.response?.data?.error || error.message || 'Une erreur est survenue lors de la sauvegarde de l\'utilisateur.';
       showNotification({
         type: 'error',
         title: 'Erreur',
-        message: 'Une erreur est survenue lors de la sauvegarde de l\'utilisateur.',
+        message: errorMessage,
       });
     } finally {
       setIsLoading(false);
@@ -147,7 +149,7 @@ const UserManagement: React.FC<UserManagementProps> = ({ showFormOnMount = false
 
   const userRoles = ['admin', 'it_personnel', 'employee'];
   
-  // Get unique departments for filtering
+
   const uniqueDepartments = Array.from(new Set(users.map(u => u.department_id).filter(Boolean))).sort();
 
   const handleSelectAll = () => {
@@ -190,7 +192,7 @@ const UserManagement: React.FC<UserManagementProps> = ({ showFormOnMount = false
   const confirmBulkDelete = async () => {
     setIsDeleting(true);
     try {
-      // Delete all selected users
+      
       for (const userId of selectedUsers) {
         await deleteUser(userId);
       }
@@ -227,8 +229,7 @@ const UserManagement: React.FC<UserManagementProps> = ({ showFormOnMount = false
     
     setIsResettingPassword(true);
     try {
-      // This would typically call an API to reset the password
-      // For now, we'll just show a success notification
+      
       showNotification({
         type: 'success',
         title: 'Mot de passe réinitialisé',

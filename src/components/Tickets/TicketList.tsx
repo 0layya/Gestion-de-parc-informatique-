@@ -23,7 +23,7 @@ const TicketList: React.FC<TicketListProps> = ({ showFormOnMount = false }) => {
   const [showDetailModal, setShowDetailModal] = useState(false);
 
   const filteredTickets = tickets.filter(ticket => {
-    // Role-based filtering: employees only see their own tickets
+    
     if (user?.role === 'employee' && ticket.created_by !== user.id) {
       return false;
     }
@@ -106,7 +106,7 @@ const TicketList: React.FC<TicketListProps> = ({ showFormOnMount = false }) => {
   const ticketPriorities = ['Basse', 'Normale', 'Haute', 'Urgente'];
   const ticketTypes = ['Incident', 'Demande', 'Panne', 'Remplacement', 'Installation', 'Maintenance'];
   
-  // Get unique assignees for filtering
+  
   const uniqueAssignees = Array.from(new Set(tickets.map(t => t.assigned_to).filter(Boolean))).sort();
 
   if (showForm) {
