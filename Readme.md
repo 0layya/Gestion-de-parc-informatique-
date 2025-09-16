@@ -2,7 +2,7 @@
 ### Technology 
 - **Frontend**: React 18 + TypeScript + Vite
 - **Backend**: Node.js + Express.js
-- **Database**: MySQL 8.0+
+- **Database**: MySQL 8.0+ (XAMPP)
 - **Authentication**: JWT (JSON Web Tokens) + bcrypt
 - **Styling**: Tailwind CSS + Lucide React Icons
 - **Build Tool**: Vite with TypeScript configuration

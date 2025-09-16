@@ -1,0 +1,17 @@
+### Technology 
+
+- **Frontend**: React 18 + TypeScript + Vite
+- **Backend**: Node.js + Express.js
+- **Database**: MySQL 8.0+ (XAMPP) 
+- **Authentication**: JWT (JSON Web Tokens) + bcrypt
+- **Styling**: Tailwind CSS + Lucide React Icons
+- **Build Tool**: Vite with TypeScript configuration
+- **Package Manager**: npm/pnpm
+
+### what to Install
+
+### Premièrement on fait installer Node.js:
+- ( https://nodejs.org/en/download )
+
+### On fait installer XAMPP :
+- (https://www.apachefriends.org/index.html)
