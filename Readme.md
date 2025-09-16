@@ -19,7 +19,7 @@ npm run dev
 # Start backend server
 npm run server
 
-# Start les deux servers
+# Start both servers
 npm run dev:full
 ```
 
